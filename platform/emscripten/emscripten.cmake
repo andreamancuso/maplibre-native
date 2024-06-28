@@ -3,12 +3,12 @@ if(NOT DEFINED ENV{EMSDK})
 endif()
 
 find_package(ICU OPTIONAL_COMPONENTS i18n uc)
-# find_package(JPEG REQUIRED)
-find_package(libuv REQUIRED)
+find_package(JPEG REQUIRED)
+find_package(libuv CONFIG REQUIRED)
 find_package(PNG REQUIRED)
-# find_package(WebP REQUIRED)
+find_package(WebP REQUIRED)
 find_path(DLFCN_INCLUDE_DIRS dlfcn.h)
-find_path(LIBUV_INCLUDE_DIRS uv.h)
+# find_path(LIBUV_INCLUDE_DIRS uv.h)
 find_package(ZLIB REQUIRED)
 
 target_sources(
@@ -38,7 +38,7 @@ target_sources(
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/sqlite3.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/text/bidi.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/text/local_glyph_rasterizer.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/async_task.cpp
+        
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/compression.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/filesystem.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/image.cpp
@@ -48,12 +48,16 @@ target_sources(
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/monotonic_timer.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/png_reader.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/png_writer.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/run_loop.cpp
+        
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/string_stdlib.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/timer.cpp
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread.cpp
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
+        
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
+
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/async_task.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/run_loop.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/timer.cpp
 
         # GLFW
         ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp
@@ -63,8 +67,8 @@ target_sources(
 
         ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_gl_backend.cpp
 
-        ${PROJECT_SOURCE_DIR}/platform/windows/src/headless_backend_egl.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/headless_backend_glfw.cpp
+        ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
 )
 
 # GLFW
@@ -81,14 +85,15 @@ target_compile_definitions(
 # # FIXME: Should not be needed, but now needed by node because of the headless frontend.
 target_include_directories(
     mbgl-core
-    PUBLIC ${PROJECT_SOURCE_DIR}/platform/default/include
-    PRIVATE
-        # ${PROJECT_SOURCE_DIR}/platform/windows/include
+    PUBLIC 
+        ${PROJECT_SOURCE_DIR}/platform/default/include
+    # PRIVATE
+        ${PROJECT_SOURCE_DIR}/platform/windows/include
         # ${CURL_INCLUDE_DIRS}
 		# ${DLFCN_INCLUDE_DIRS}
-        # ${JPEG_INCLUDE_DIRS}
-        ${LIBUV_INCLUDE_DIRS}
-        # ${WEBP_INCLUDE_DIRS}
+        ${JPEG_INCLUDE_DIRS}
+        # ${LIBUV_INCLUDE_DIRS}
+        ${WEBP_INCLUDE_DIRS}
 )
 
 include(${PROJECT_SOURCE_DIR}/vendor/nunicode.cmake)
@@ -125,27 +130,5 @@ target_link_libraries(
         mbgl-vendor-nunicode
         ZLIB::ZLIB
         mbgl-vendor-sqlite
+        $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>
 )
-
-# if (DEFINED EMSCRIPTEN)
-# include($ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake)
-#     set(CMAKE_EXECUTABLE_SUFFIX ".mjs")
-#     add_executable(mbgl-wasm ${PROJECT_SOURCE_DIR}/platform/emscripten/main.cpp)
-
-#     target_link_libraries(
-#         mbgl-wasm
-#         PRIVATE
-#             Mapbox::Base::Extras::args
-#             Mapbox::Base::Extras::filesystem
-#             Mapbox::Base::Extras::rapidjson
-#             Mapbox::Map
-#             mbgl-compiler-options
-#             Mapbox::Base::cheap-ruler-cpp
-#     )
-
-#     set_target_properties(mbgl-wasm PROPERTIES COMPILE_FLAGS "-O0 -pthread -s DISABLE_EXCEPTION_CATCHING=0")
-#     set_target_properties(mbgl-wasm PROPERTIES LINK_FLAGS "--no-heap-copy -O0 -pthread -lembind --emit-tsd interface.d.ts -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web' -s MODULARIZE=1 -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s NO_EXIT_RUNTIME=0 -s STANDALONE_WASM=0 -s EXIT_RUNTIME=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0")
-
-#     set_target_properties(mbgl-wasm PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-
-# endif()

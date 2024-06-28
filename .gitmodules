@@ -52,3 +52,6 @@
 [submodule "vendor/emscripten"]
 	path = vendor/emscripten
 	url = https://github.com/emscripten-core/emscripten.git
+[submodule "vendor/vcpkg"]
+	path = vendor/vcpkg
+	url = https://github.com/microsoft/vcpkg.git
