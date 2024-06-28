@@ -50,11 +50,11 @@ target_sources(
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/png_writer.cpp
         
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/string_stdlib.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
         
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread_local.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/async_task.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/run_loop.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/timer.cpp
