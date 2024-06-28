@@ -337,10 +337,10 @@ public:
                       stencilMode,
                       colorMode,
                       cullFaceMode,
-                      uniformValues,
+                    //   uniformValues,
                       drawScopeIt->second,
-                      allAttributeBindings.offset(segment.vertexOffset),
-                      textureBindings,
+                    //   allAttributeBindings.offset(segment.vertexOffset),
+                    //   textureBindings,
                       indexBuffer,
                       segment.indexOffset,
                       segment.indexLength);

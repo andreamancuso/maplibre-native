@@ -34,9 +34,9 @@ public:
     Program& operator=(Program&&) = delete;
     Program& operator=(const Program&) = delete;
 
-    using AttributeList = typename Name::AttributeList;
-    using UniformList = typename Name::UniformList;
-    using TextureList = typename Name::TextureList;
+    // using AttributeList = typename Name::AttributeList;
+    // using UniformList = typename Name::UniformList;
+    // using TextureList = typename Name::TextureList;
 
     virtual void draw(Context&,
                       RenderPass&,
@@ -45,10 +45,10 @@ public:
                       const StencilMode&,
                       const ColorMode&,
                       const CullFaceMode&,
-                      const UniformValues<UniformList>&,
+                    //   const UniformValues<UniformList>&,
                       DrawScope&,
-                      const AttributeBindings<AttributeList>&,
-                      const TextureBindings<TextureList>&,
+                    //   const AttributeBindings<AttributeList>&,
+                    //   const TextureBindings<TextureList>&,
                       const IndexBuffer&,
                       std::size_t indexOffset,
                       std::size_t indexLength) = 0;

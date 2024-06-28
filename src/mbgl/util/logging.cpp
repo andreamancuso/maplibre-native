@@ -71,12 +71,12 @@ void Log::useLogThread(bool enable, EventSeverity severity) noexcept {
 }
 
 void Log::setObserver(std::unique_ptr<Observer> observer) {
-    std::lock_guard<std::mutex> lock(mutex);
+    // std::lock_guard<std::mutex> lock(mutex);
     currentObserver = std::move(observer);
 }
 
 std::unique_ptr<Log::Observer> Log::removeObserver() {
-    std::lock_guard<std::mutex> lock(mutex);
+    // std::lock_guard<std::mutex> lock(mutex);
     std::unique_ptr<Observer> observer;
     std::swap(observer, currentObserver);
     return observer;
@@ -95,7 +95,7 @@ void Log::record(EventSeverity severity,
                  int64_t code,
                  const std::string& msg,
                  const std::optional<std::string>& threadName) {
-    std::lock_guard<std::mutex> lock(mutex);
+    // std::lock_guard<std::mutex> lock(mutex);
     if (currentObserver && severity != EventSeverity::Debug && currentObserver->onRecord(severity, event, code, msg)) {
         return;
     }

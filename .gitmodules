@@ -49,3 +49,6 @@
 [submodule "vendor/unordered_dense"]
 	path = vendor/unordered_dense
 	url = https://github.com/martinus/unordered_dense.git
+[submodule "vendor/emscripten"]
+	path = vendor/emscripten
+	url = https://github.com/emscripten-core/emscripten.git

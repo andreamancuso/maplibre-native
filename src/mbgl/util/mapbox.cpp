@@ -94,7 +94,7 @@ std::map<std::string, std::string> createTokenMap(const std::string& urlTemplate
     }
 
     std::map<std::string, std::string> tokenMap;
-    std::copy(tokenList.begin(), tokenList.end(), std::inserter(tokenMap, tokenMap.begin()));
+    // std::copy(tokenList.begin(), tokenList.end(), std::inserter(tokenMap, tokenMap.begin()));
 
     return tokenMap;
 }

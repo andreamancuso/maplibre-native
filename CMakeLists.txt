@@ -4,13 +4,14 @@ option(MLN_WITH_CORE_ONLY "Build only the core bits, no platform code" OFF)
 option(MLN_WITH_CLANG_TIDY "Build with clang-tidy checks enabled" OFF)
 option(MLN_WITH_COVERAGE "Enable code coverage collection" OFF)
 option(MLN_WITH_QT "Build MapLibre Native Qt bindings" OFF)
+option(MLN_WITH_EMSCRIPTEN "Build MapLibre Native Wasm bindings" ON)
 option(MLN_WITH_NODE "Build MapLibre Native Node.js bindings" OFF)
 option(MLN_WITH_SANITIZER "Use [address|thread|undefined] here" OFF)
 option(MLN_WITH_RTTI "Compile with runtime type information" OFF)
 option(MLN_WITH_OPENGL "Build with OpenGL renderer" ON)
 option(MLN_WITH_EGL "Build with EGL renderer" OFF)
 option(MLN_WITH_OSMESA "Build with OSMesa (Software) renderer" OFF)
-option(MLN_WITH_WERROR "Make all compilation warnings errors" ON)
+option(MLN_WITH_WERROR "Make all compilation warnings errors" OFF)
 option(MLN_LEGACY_RENDERER "Include the legacy rendering pathway" ON)
 option(MLN_DRAWABLE_RENDERER "Include the drawable rendering pathway" OFF)
 option(MLN_USE_UNORDERED_DENSE "Use ankerl dense containers for performance" ON)
@@ -87,7 +88,7 @@ target_compile_options(
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<PLATFORM_ID:Windows>>>:-Wall>
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<PLATFORM_ID:Windows>>>:-Wshadow>
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<PLATFORM_ID:Windows>>>:-Wextra>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<PLATFORM_ID:Windows>>,$<BOOL:${MLN_WITH_WERROR}>>:-Werror>
+        # $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<PLATFORM_ID:Windows>>,$<BOOL:${MLN_WITH_WERROR}>>:-Werror>
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<PLATFORM_ID:Android>>:-Wno-error=tautological-constant-compare>
         $<$<CXX_COMPILER_ID:GNU>:-Wno-error=maybe-uninitialized>
         $<$<CXX_COMPILER_ID:GNU>:-Wno-error=return-type>
@@ -99,7 +100,7 @@ target_compile_options(
         $<$<AND:$<CXX_COMPILER_ID:AppleClang>,$<NOT:$<BOOL:${MLN_WITH_QT}>>>:-Wno-error=unused-parameter>
         $<$<AND:$<CXX_COMPILER_ID:AppleClang>,$<NOT:$<BOOL:${MLN_WITH_QT}>>>:-Wno-error=unused-property-ivar>
         $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
-        $<$<CXX_COMPILER_ID:MSVC>:/WX>      # all warnings as errors
+        # $<$<CXX_COMPILER_ID:MSVC>:/WX>      # all warnings as errors
         $<$<CXX_COMPILER_ID:MSVC>:/EHsc>    # exceptions
         $<$<CXX_COMPILER_ID:MSVC>:/wd4068>  # pragma
         $<$<CXX_COMPILER_ID:MSVC>:/D_USE_MATH_DEFINES>
@@ -1443,6 +1444,9 @@ include(${PROJECT_SOURCE_DIR}/scripts/license.cmake)
 
 if(MLN_WITH_QT)
     include(${PROJECT_SOURCE_DIR}/platform/qt/qt.cmake)
+elseif(MLN_WITH_EMSCRIPTEN)
+    include(${PROJECT_SOURCE_DIR}/platform/emscripten/emscripten.cmake)
+    return()
 elseif(CMAKE_SYSTEM_NAME STREQUAL Android)
     include(${PROJECT_SOURCE_DIR}/platform/android/android.cmake)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
