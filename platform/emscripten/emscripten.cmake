@@ -126,7 +126,7 @@ target_link_libraries(mbgl-core
 )
 
 set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
-set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O0 -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DMLN_RENDER_BACKEND_OPENGL -DMLN_DRAWABLE_RENDERER")
-set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "--no-heap-copy -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -O0 -lembind -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web,worker' -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s STANDALONE_WASM=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0 -sSIDE_MODULE")
+set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O0 -pthread -fPIC --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DMLN_RENDER_BACKEND_OPENGL -DMLN_DRAWABLE_RENDERER")
+set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "--no-heap-copy -pthread  -fPIC --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -O0 -lembind -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web,worker' -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s STANDALONE_WASM=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s EXPORT_ALL=1 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0 -sSIDE_MODULE")
 
 set_target_properties(mbgl-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/platform/emscripten/build)
