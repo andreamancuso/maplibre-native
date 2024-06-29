@@ -63,12 +63,12 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
         
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread.cpp
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread_local.cpp
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread.cpp
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/async_task.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/timer.cpp
         
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/logging.cpp
+        # ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/logging.cpp
 
         # GLFW
         # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp

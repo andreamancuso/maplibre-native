@@ -995,13 +995,13 @@ list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/work_request.cpp
 )
 
-if (NOT MLN_WITH_EMSCRIPTEN)
+# if (NOT MLN_WITH_EMSCRIPTEN)
     list(APPEND SRC_FILES
         ${PROJECT_SOURCE_DIR}/src/mbgl/util/logging.cpp
         ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.cpp
         ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.hpp
     )
-endif()
+# endif()
 
 if(MLN_WITH_OPENGL OR MLN_WITH_EMSCRIPTEN)
     if (NOT MLN_WITH_EMSCRIPTEN)
