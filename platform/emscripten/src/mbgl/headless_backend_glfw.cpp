@@ -8,12 +8,14 @@ namespace gl {
 class GlfwBackendImpl final : public HeadlessBackend::Impl {
 public:
     GlfwBackendImpl() {
+        printf("GlfwBackendImpl()\n");
         // context.create();
         // surface.create();
     }
     ~GlfwBackendImpl() = default;
 
     gl::ProcAddress getExtensionFunctionPointer(const char* name) {
+        printf("getExtensionFunctionPointer()\n");
         // QOpenGLContext* thisContext = QOpenGLContext::currentContext();
         // return thisContext->getProcAddress(name);
     }

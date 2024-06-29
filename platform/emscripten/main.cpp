@@ -12,10 +12,13 @@ int main(int argc, char* argv[]) {
     const uint32_t width = 512;
     const uint32_t height = 512;
     auto mapTilerConfiguration = mbgl::TileServerOptions::MapTilerConfiguration();
+    mbgl::Size size{width, height};
 
     printf("mapTilerConfiguration.baseURL(): %s\n", mapTilerConfiguration.baseURL().c_str());
 
-    mbgl::HeadlessFrontend frontend({width, height}, static_cast<float>(pixelRatio));
+    mbgl::HeadlessFrontend frontend(size, static_cast<float>(pixelRatio));
+
+    printf("ma va\n");
 
     // mbgl::Map map(frontend,
     //         mbgl::MapObserver::nullObserver(),

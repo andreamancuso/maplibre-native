@@ -15,7 +15,9 @@ HeadlessFrontend::HeadlessFrontend(float pixelRatio_,
                                    gfx::HeadlessBackend::SwapBehaviour swapBehavior,
                                    const gfx::ContextMode contextMode,
                                    const std::optional<std::string>& localFontFamily)
-    : HeadlessFrontend({256, 256}, pixelRatio_, swapBehavior, contextMode, localFontFamily) {}
+    : HeadlessFrontend({256, 256}, pixelRatio_, swapBehavior, contextMode, localFontFamily) {
+        printf("HeadlessFrontend::HeadlessFrontend 1\n");
+    }
 
 HeadlessFrontend::HeadlessFrontend(Size size_,
                                    float pixelRatio_,
@@ -23,28 +25,32 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
                                    const gfx::ContextMode contextMode,
                                    const std::optional<std::string>& localFontFamily,
                                    bool invalidateOnUpdate_)
-    : size(size_),
-      pixelRatio(pixelRatio_),
-      frameTime(0),
-      backend(gfx::HeadlessBackend::Create(
-          {static_cast<uint32_t>(size.width * pixelRatio), static_cast<uint32_t>(size.height * pixelRatio)},
-          swapBehavior,
-          contextMode)),
-      asyncInvalidate([this] { renderFrame(); }),
-      invalidateOnUpdate(invalidateOnUpdate_),
-      renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily)) {}
+     
+    //   size(size_),
+    //   pixelRatio(pixelRatio_),
+    //   frameTime(0),
+    //   backend(gfx::HeadlessBackend::Create(
+    //       {static_cast<uint32_t>(size.width * pixelRatio), static_cast<uint32_t>(size.height * pixelRatio)},
+    //       swapBehavior,
+    //       contextMode)),
+    //   asyncInvalidate([this] { renderFrame(); }),
+    //   invalidateOnUpdate(invalidateOnUpdate_),
+    //   renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily))
+       {
+        printf("HeadlessFrontend::HeadlessFrontend 2\n");
+      }
 
 HeadlessFrontend::~HeadlessFrontend() = default;
 
 void HeadlessFrontend::reset() {
-    assert(renderer);
-    renderer.reset();
+    // assert(renderer);
+    // renderer.reset();
 }
 
 void HeadlessFrontend::update(std::shared_ptr<UpdateParameters> updateParameters_) {
     updateParameters = updateParameters_;
     if (invalidateOnUpdate) {
-        asyncInvalidate.send();
+        // asyncInvalidate.send();
     }
 }
 
@@ -53,8 +59,8 @@ const TaggedScheduler& HeadlessFrontend::getThreadPool() const {
 }
 
 void HeadlessFrontend::setObserver(RendererObserver& observer_) {
-    assert(renderer);
-    renderer->setObserver(&observer_);
+    // assert(renderer);
+    // renderer->setObserver(&observer_);
 }
 
 double HeadlessFrontend::getFrameTime() const {
@@ -66,8 +72,8 @@ Size HeadlessFrontend::getSize() const {
 }
 
 Renderer* HeadlessFrontend::getRenderer() {
-    assert(renderer);
-    return renderer.get();
+    // assert(renderer);
+    // return renderer.get();
 }
 
 gfx::RendererBackend* HeadlessFrontend::getBackend() {
@@ -162,7 +168,8 @@ void HeadlessFrontend::renderOnce(Map&) {
 }
 
 void HeadlessFrontend::renderFrame() {
-    if (renderer && updateParameters) {
+    printf("HeadlessFrontend::renderFrame\n");
+    if (updateParameters) {
         auto startTime = mbgl::util::MonotonicTimer::now();
         gfx::BackendScope guard{*getBackend()};
 
@@ -172,7 +179,7 @@ void HeadlessFrontend::renderFrame() {
         // Copy the shared pointer here so that the parameters aren't
         // destroyed while `render(...)` is still using them.
         auto updateParameters_ = updateParameters;
-        renderer->render(updateParameters_);
+        // renderer->render(updateParameters_);
 
         auto endTime = mbgl::util::MonotonicTimer::now();
         frameTime = (endTime - startTime).count();

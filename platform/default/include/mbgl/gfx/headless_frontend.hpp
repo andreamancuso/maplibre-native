@@ -68,10 +68,10 @@ private:
 
     std::atomic<double> frameTime;
     std::unique_ptr<gfx::HeadlessBackend> backend;
-    util::AsyncTask asyncInvalidate;
+    // util::AsyncTask asyncInvalidate;
     bool invalidateOnUpdate;
 
-    std::unique_ptr<Renderer> renderer;
+    // std::unique_ptr<Renderer> renderer;
     std::shared_ptr<UpdateParameters> updateParameters;
 };
 
