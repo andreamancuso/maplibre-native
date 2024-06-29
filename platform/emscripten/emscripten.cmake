@@ -2,12 +2,6 @@ if(NOT DEFINED ENV{EMSDK})
     message(FATAL_ERROR "Environment variable EMSDK is not defined. Follow the README steps and source emsdk_env.* from the EMSDK root directory in this shell before running CMake")
 endif()
 
-set(CMAKE_GENERATOR "Ninja")
-set(CMAKE_TOOLCHAIN_FILE vendor/vcpkg/scripts/buildsystems/vcpkg.cmake)
-set(VCPKG_TARGET_TRIPLET "wasm32-emscripten")
-
-set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE $ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake)
-
 find_package(ICU OPTIONAL_COMPONENTS i18n uc)
 find_path(DLFCN_INCLUDE_DIRS dlfcn.h)
 
