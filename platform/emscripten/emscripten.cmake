@@ -82,9 +82,9 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
 )
 
-add_executable(mbgl-core-wasm ${INCLUDE_FILES} ${SRC_FILES} ${EXTRA_SRC_FILES})
+add_executable(mbgl-core ${INCLUDE_FILES} ${SRC_FILES} ${EXTRA_SRC_FILES})
 
-target_include_directories(mbgl-core-wasm PRIVATE 
+target_include_directories(mbgl-core PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR} 
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
@@ -93,7 +93,7 @@ target_include_directories(mbgl-core-wasm PRIVATE
     ${PROJECT_SOURCE_DIR}/vendor/libwebp/src
 )
 
-target_link_libraries(mbgl-core-wasm 
+target_link_libraries(mbgl-core
     PRIVATE 
     Mapbox::Base::Extras::kdbush.hpp
         Mapbox::Base::supercluster.hpp
@@ -126,7 +126,7 @@ target_link_libraries(mbgl-core-wasm
 )
 
 set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
-set_target_properties(mbgl-core-wasm PROPERTIES COMPILE_FLAGS "-O0 -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DMLN_RENDER_BACKEND_OPENGL -DMLN_DRAWABLE_RENDERER")
-set_target_properties(mbgl-core-wasm PROPERTIES LINK_FLAGS "--no-heap-copy -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -O0 -lembind -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web,worker' -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s STANDALONE_WASM=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0 -sSIDE_MODULE")
+set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O0 -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DMLN_RENDER_BACKEND_OPENGL -DMLN_DRAWABLE_RENDERER")
+set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "--no-heap-copy -pthread --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -O0 -lembind -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web,worker' -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s STANDALONE_WASM=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0 -sSIDE_MODULE")
 
-set_target_properties(mbgl-core-wasm PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/platform/emscripten/build)
+set_target_properties(mbgl-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/platform/emscripten/build)
