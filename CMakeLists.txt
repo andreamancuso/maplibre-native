@@ -34,7 +34,7 @@ if (MLN_WITH_QT AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
 endif()
 
-if(WIN32 AND NOT MLN_WITH_QT)
+if(WIN32 AND NOT MLN_WITH_QT AND NOT MLN_WITH_EMSCRIPTEN)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/platform/windows/custom-toolchain.cmake)
 endif()
 
@@ -136,7 +136,9 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-if(MLN_WITH_QT)
+if (MLN_WITH_EMSCRIPTEN)
+    # Do not declare library
+elseif(MLN_WITH_QT)
     add_library(mbgl-core OBJECT)
 else()
     add_library(mbgl-core STATIC)
@@ -952,7 +954,6 @@ list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/io.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/io.hpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/literal.hpp
-    ${PROJECT_SOURCE_DIR}/src/mbgl/util/logging.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/longest_common_subsequence.hpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/mapbox.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/mapbox.hpp
@@ -975,8 +976,6 @@ list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/string_indexer.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_local.hpp
-    ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.cpp
-    ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.hpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/tile_coordinate.hpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/tile_cover.cpp
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/tile_cover.hpp
@@ -996,16 +995,28 @@ list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/work_request.cpp
 )
 
-if(MLN_WITH_OPENGL)
-    message(STATUS "Configuring GL-Native with OpenGL renderer backend")
-    target_compile_definitions(
-        mbgl-core
-        PRIVATE MLN_RENDER_BACKEND_OPENGL=1
-        PUBLIC
-            "MLN_LEGACY_RENDERER=$<BOOL:${MLN_LEGACY_RENDERER}>"
-            "MLN_DRAWABLE_RENDERER=$<BOOL:${MLN_DRAWABLE_RENDERER}>"
-            "MLN_USE_UNORDERED_DENSE=$<BOOL:${MLN_USE_UNORDERED_DENSE}>"
+if (NOT MLN_WITH_EMSCRIPTEN)
+    list(APPEND SRC_FILES
+        ${PROJECT_SOURCE_DIR}/src/mbgl/util/logging.cpp
+        ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.cpp
+        ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.hpp
     )
+endif()
+
+if(MLN_WITH_OPENGL OR MLN_WITH_EMSCRIPTEN)
+    if (NOT MLN_WITH_EMSCRIPTEN)
+        message(STATUS "Configuring GL-Native with OpenGL renderer backend")
+        # For emscripten these are set manually as COMPILE_FLAGS
+        target_compile_definitions(
+            mbgl-core
+            PRIVATE MLN_RENDER_BACKEND_OPENGL=1
+            PUBLIC
+                "MLN_LEGACY_RENDERER=$<BOOL:${MLN_LEGACY_RENDERER}>"
+                "MLN_DRAWABLE_RENDERER=$<BOOL:${MLN_DRAWABLE_RENDERER}>"
+                "MLN_USE_UNORDERED_DENSE=$<BOOL:${MLN_USE_UNORDERED_DENSE}>"
+        )
+    endif()
+
     list(APPEND 
         INCLUDE_FILES
             ${PROJECT_SOURCE_DIR}/include/mbgl/gfx/backend.hpp
@@ -1191,7 +1202,7 @@ if(MLN_WITH_OPENGL)
     endif()
 endif()
 
-if(MBGL_WITH_METAL)
+if(MBGL_WITH_METAL AND NOT MLN_WITH_EMSCRIPTEN)
     message(STATUS "Configuring Metal renderer backend")
     target_compile_definitions(
         mbgl-core
@@ -1290,14 +1301,16 @@ if(MBGL_WITH_METAL)
     )
 endif()
 
-target_sources(
-    mbgl-core PRIVATE
-    ${INCLUDE_FILES}
-    ${SRC_FILES}
-)
+if (NOT MLN_WITH_EMSCRIPTEN)
+    target_sources(
+        mbgl-core PRIVATE
+        ${INCLUDE_FILES}
+        ${SRC_FILES}
+    )
 
-if (MLN_WITH_CLANG_TIDY)
-    set_target_properties(mbgl-core PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    if (MLN_WITH_CLANG_TIDY)
+        set_target_properties(mbgl-core PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    endif()
 endif()
 
 source_group(TREE ${PROJECT_SOURCE_DIR}/include FILES ${INCLUDE_FILES})
@@ -1325,15 +1338,17 @@ set_source_files_properties(
     MBGL_VERSION_REV="${MLN_VERSION_REV}"
 )
 
-target_include_directories(
-    mbgl-core
-    PRIVATE ${PROJECT_SOURCE_DIR}/src
-)
+if (NOT MLN_WITH_EMSCRIPTEN)
+    target_include_directories(
+        mbgl-core
+        PRIVATE ${PROJECT_SOURCE_DIR}/src
+    )
 
-target_include_directories(
-    mbgl-core
-    PUBLIC ${PROJECT_SOURCE_DIR}/include
-)
+    target_include_directories(
+        mbgl-core
+        PUBLIC ${PROJECT_SOURCE_DIR}/include
+    )
+endif()
 
 include(${PROJECT_SOURCE_DIR}/vendor/boost.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/csscolorparser.cmake)
@@ -1343,10 +1358,13 @@ include(${PROJECT_SOURCE_DIR}/vendor/mapbox-base.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/parsedate.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/polylabel.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/protozero.cmake)
-include(${PROJECT_SOURCE_DIR}/vendor/tracy.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/unique_resource.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/vector-tile.cmake)
 include(${PROJECT_SOURCE_DIR}/vendor/wagyu.cmake)
+
+if (NOT MLN_WITH_EMSCRIPTEN)
+    include(${PROJECT_SOURCE_DIR}/vendor/tracy.cmake)
+endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/unordered_dense)
 set_target_properties(
@@ -1358,14 +1376,53 @@ set_target_properties(
         INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/vendor/unordered_dense/LICENSE
 )
 
-target_link_libraries(
-    mbgl-core
-    PRIVATE
-        Mapbox::Base::Extras::kdbush.hpp
-        Mapbox::Base::supercluster.hpp
-        Mapbox::Base::shelf-pack-cpp
-        Mapbox::Base::geojson-vt-cpp
-        Mapbox::Base::cheap-ruler-cpp
+if (NOT MLN_WITH_EMSCRIPTEN)
+    target_link_libraries(
+        mbgl-core
+        PRIVATE
+            Mapbox::Base::Extras::kdbush.hpp
+            Mapbox::Base::supercluster.hpp
+            Mapbox::Base::shelf-pack-cpp
+            Mapbox::Base::geojson-vt-cpp
+            Mapbox::Base::cheap-ruler-cpp
+            mbgl-compiler-options
+            mbgl-vendor-boost
+            mbgl-vendor-csscolorparser
+            mbgl-vendor-earcut.hpp
+            mbgl-vendor-eternal
+            mbgl-vendor-parsedate
+            mbgl-vendor-polylabel
+            mbgl-vendor-protozero
+            mbgl-vendor-unique_resource
+            mbgl-vendor-vector-tile
+            mbgl-vendor-wagyu
+        PUBLIC
+            Mapbox::Base
+            Mapbox::Base::Extras::expected-lite
+            Mapbox::Base::Extras::rapidjson
+            Mapbox::Base::geojson.hpp
+            Mapbox::Base::geometry.hpp
+            Mapbox::Base::variant
+            TracyClient
+            unordered_dense
+    )
+
+    export(TARGETS
+        mbgl-core
+
+        mapbox-base
+        mapbox-base-cheap-ruler-cpp
+        mapbox-base-extras-expected-lite
+        mapbox-base-extras-kdbush.hpp
+        mapbox-base-extras-rapidjson
+        mapbox-base-geojson-vt-cpp
+        mapbox-base-geojson.hpp
+        mapbox-base-geometry.hpp
+        mapbox-base-jni.hpp
+        mapbox-base-pixelmatch-cpp
+        mapbox-base-shelf-pack-cpp
+        mapbox-base-supercluster.hpp
+        mapbox-base-variant
         mbgl-compiler-options
         mbgl-vendor-boost
         mbgl-vendor-csscolorparser
@@ -1377,70 +1434,36 @@ target_link_libraries(
         mbgl-vendor-unique_resource
         mbgl-vendor-vector-tile
         mbgl-vendor-wagyu
-    PUBLIC
-        Mapbox::Base
-        Mapbox::Base::Extras::expected-lite
-        Mapbox::Base::Extras::rapidjson
-        Mapbox::Base::geojson.hpp
-        Mapbox::Base::geometry.hpp
-        Mapbox::Base::variant
         TracyClient
         unordered_dense
-)
 
-export(TARGETS
-    mbgl-core
+        FILE MapboxCoreTargets.cmake
+    )
 
-    mapbox-base
-    mapbox-base-cheap-ruler-cpp
-    mapbox-base-extras-expected-lite
-    mapbox-base-extras-kdbush.hpp
-    mapbox-base-extras-rapidjson
-    mapbox-base-geojson-vt-cpp
-    mapbox-base-geojson.hpp
-    mapbox-base-geometry.hpp
-    mapbox-base-jni.hpp
-    mapbox-base-pixelmatch-cpp
-    mapbox-base-shelf-pack-cpp
-    mapbox-base-supercluster.hpp
-    mapbox-base-variant
-    mbgl-compiler-options
-    mbgl-vendor-boost
-    mbgl-vendor-csscolorparser
-    mbgl-vendor-earcut.hpp
-    mbgl-vendor-eternal
-    mbgl-vendor-parsedate
-    mbgl-vendor-polylabel
-    mbgl-vendor-protozero
-    mbgl-vendor-unique_resource
-    mbgl-vendor-vector-tile
-    mbgl-vendor-wagyu
-    TracyClient
-    unordered_dense
+    set_target_properties(
+        mbgl-core
+        PROPERTIES
+            INTERFACE_MAPBOX_NAME "Mapbox GL Native"
+            INTERFACE_MAPBOX_URL "https://github.com/maplibre/maplibre-native"
+            INTERFACE_MAPBOX_AUTHOR "Mapbox"
+            INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.md
+    )
 
-    FILE MapboxCoreTargets.cmake
-)
+    set_property(TARGET mbgl-core PROPERTY FOLDER MapLibre)
 
-set_target_properties(
-    mbgl-core
-    PROPERTIES
-        INTERFACE_MAPBOX_NAME "Mapbox GL Native"
-        INTERFACE_MAPBOX_URL "https://github.com/maplibre/maplibre-native"
-        INTERFACE_MAPBOX_AUTHOR "Mapbox"
-        INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.md
-)
+    add_library(
+        Mapbox::Map ALIAS mbgl-core
+    )
 
-set_property(TARGET mbgl-core PROPERTY FOLDER MapLibre)
-
-add_library(
-    Mapbox::Map ALIAS mbgl-core
-)
+endif()
 
 if(MLN_WITH_CORE_ONLY)
     return()
 endif()
 
-include(${PROJECT_SOURCE_DIR}/scripts/license.cmake)
+if (NOT MLN_WITH_EMSCRIPTEN)
+    include(${PROJECT_SOURCE_DIR}/scripts/license.cmake)
+endif()
 
 if(MLN_WITH_QT)
     include(${PROJECT_SOURCE_DIR}/platform/qt/qt.cmake)

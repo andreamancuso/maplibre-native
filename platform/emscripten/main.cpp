@@ -5,7 +5,7 @@
 #include <mbgl/util/type_list.hpp>
 #include <mbgl/map/map.hpp>
 #include <mbgl/map/map_options.hpp>
-#include <mbgl/gfx/headless_frontend.hpp>
+// #include <mbgl/gfx/headless_frontend.hpp>
 
 int main(int argc, char* argv[]) {
     const double pixelRatio = 1;
@@ -16,9 +16,9 @@ int main(int argc, char* argv[]) {
 
     printf("mapTilerConfiguration.baseURL(): %s\n", mapTilerConfiguration.baseURL().c_str());
 
-    mbgl::HeadlessFrontend frontend(size, static_cast<float>(pixelRatio));
+    // mbgl::HeadlessFrontend frontend(size, static_cast<float>(pixelRatio));
 
-    printf("ma va\n");
+    // printf("frontend initialised\n");
 
     // mbgl::Map map(frontend,
     //         mbgl::MapObserver::nullObserver(),

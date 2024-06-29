@@ -26,16 +26,16 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
                                    const std::optional<std::string>& localFontFamily,
                                    bool invalidateOnUpdate_)
      
-    //   size(size_),
-    //   pixelRatio(pixelRatio_),
-    //   frameTime(0),
-    //   backend(gfx::HeadlessBackend::Create(
-    //       {static_cast<uint32_t>(size.width * pixelRatio), static_cast<uint32_t>(size.height * pixelRatio)},
-    //       swapBehavior,
-    //       contextMode)),
-    //   asyncInvalidate([this] { renderFrame(); }),
-    //   invalidateOnUpdate(invalidateOnUpdate_),
-    //   renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily))
+    : size(size_),
+      pixelRatio(pixelRatio_),
+      frameTime(0),
+      backend(gfx::HeadlessBackend::Create(
+          {static_cast<uint32_t>(size.width * pixelRatio), static_cast<uint32_t>(size.height * pixelRatio)},
+          swapBehavior,
+          contextMode)),
+      asyncInvalidate([this] { renderFrame(); }),
+      invalidateOnUpdate(invalidateOnUpdate_),
+      renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily))
        {
         printf("HeadlessFrontend::HeadlessFrontend 2\n");
       }
@@ -50,7 +50,7 @@ void HeadlessFrontend::reset() {
 void HeadlessFrontend::update(std::shared_ptr<UpdateParameters> updateParameters_) {
     updateParameters = updateParameters_;
     if (invalidateOnUpdate) {
-        // asyncInvalidate.send();
+        asyncInvalidate.send();
     }
 }
 
