@@ -63,8 +63,8 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
         
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread_local.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/async_task.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/timer.cpp
         
@@ -82,15 +82,36 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
 )
 
-add_executable(mbgl-core ${INCLUDE_FILES} ${SRC_FILES} ${EXTRA_SRC_FILES})
+add_library(mbgl-core STATIC)
 
-target_include_directories(mbgl-core PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR} 
+target_compile_definitions(
+    mbgl-core
+    PRIVATE MLN_RENDER_BACKEND_OPENGL=1
+    PUBLIC
+        "MLN_LEGACY_RENDERER=$<BOOL:${MLN_LEGACY_RENDERER}>"
+        "MLN_DRAWABLE_RENDERER=$<BOOL:${MLN_DRAWABLE_RENDERER}>"
+        "MLN_USE_UNORDERED_DENSE=$<BOOL:${MLN_USE_UNORDERED_DENSE}>"
+)
+
+target_sources(
+        mbgl-core PRIVATE
+        ${INCLUDE_FILES}
+        ${SRC_FILES}
+        ${EXTRA_SRC_FILES}
+    )
+
+target_include_directories(
+    mbgl-core
+    PRIVATE ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/vendor/libwebp/src
+)
+
+target_include_directories(
+    mbgl-core
+    PUBLIC
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/platform/windows/include
     ${PROJECT_SOURCE_DIR}/platform/default/include
-    ${PROJECT_SOURCE_DIR}/vendor/libwebp/src
 )
 
 target_link_libraries(mbgl-core
@@ -125,8 +146,6 @@ target_link_libraries(mbgl-core
         unordered_dense
 )
 
-set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
-set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O0 -pthread -fPIC --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DMLN_RENDER_BACKEND_OPENGL -DMLN_DRAWABLE_RENDERER")
-set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "--no-heap-copy -pthread  -fPIC --use-port=libpng --use-port=libjpeg --use-port=zlib --use-port=sqlite3 -O0 -lembind -lhtml5.js -lhtml5_webgl.js -lglfw.js -s ENVIRONMENT='web,worker' -s ALLOW_MEMORY_GROWTH=1 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGPU=1 -s STANDALONE_WASM=1 -s ASSERTIONS=1 -s STACK_OVERFLOW_CHECK=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -sFULL_ES3 -s EXPORT_ALL=1 -s DISABLE_EXCEPTION_CATCHING=0 -s SINGLE_FILE=0 -sSIDE_MODULE")
+set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O3 -pthread")
+set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "-O3 -pthread -s EXPORT_ALL=1")
 
-set_target_properties(mbgl-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/platform/emscripten/build)
