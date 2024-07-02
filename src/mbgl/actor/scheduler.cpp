@@ -1,7 +1,10 @@
 #include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/thread_local.hpp>
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
-
+#endif
 namespace mbgl {
 
 std::function<void()> Scheduler::bindOnce(std::function<void()> fn) {
@@ -28,15 +31,22 @@ Scheduler* Scheduler::GetCurrent() {
 
 // static
 std::shared_ptr<Scheduler> Scheduler::GetBackground() {
+    printf("Scheduler::GetBackground() a\n");
     static std::weak_ptr<Scheduler> weak;
+    printf("Scheduler::GetBackground() b\n");
     static std::mutex mtx;
-
+    printf("Scheduler::GetBackground() c\n");
     std::lock_guard<std::mutex> lock(mtx);
+    printf("Scheduler::GetBackground() d\n");
     std::shared_ptr<Scheduler> scheduler = weak.lock();
-
+    printf("Scheduler::GetBackground() e\n");
     if (!scheduler) {
+        printf("Scheduler::GetBackground() f\n");
         weak = scheduler = std::make_shared<ThreadPool>();
+        printf("Scheduler::GetBackground() g\n");
     }
+
+    printf("Scheduler::GetBackground() h\n");
 
     return scheduler;
 }

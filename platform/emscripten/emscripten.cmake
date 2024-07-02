@@ -62,11 +62,14 @@ list(APPEND EXTRA_SRC_FILES
         
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
-        
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/thread.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/thread.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/async_task.cpp
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/timer.cpp
+
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/thread_pool.hpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/thread_pool.cpp
+        
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/async_task.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/timer.cpp
         
         # ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/logging.cpp
 
@@ -78,7 +81,7 @@ list(APPEND EXTRA_SRC_FILES
 
         # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_gl_backend.cpp
 
-        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/headless_backend_glfw.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/headless_backend_glfw.cpp
         ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
 )
 
@@ -111,6 +114,7 @@ target_include_directories(
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/platform/windows/include
+    ${PROJECT_SOURCE_DIR}/platform/emscripten/src
     ${PROJECT_SOURCE_DIR}/platform/default/include
 )
 

@@ -22,7 +22,13 @@
 #include <mbgl/util/traits.hpp>
 #include <mbgl/util/std.hpp>
 #include <mbgl/util/logging.hpp>
+
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
+#endif
+
 #include <mbgl/util/hash.hpp>
 
 #include <Foundation/Foundation.hpp>

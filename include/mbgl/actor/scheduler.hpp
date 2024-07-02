@@ -102,6 +102,10 @@ public:
     /// Set a function to be called when an exception occurs on a thread controlled by the scheduler
     void setExceptionHandler(std::function<void(const std::exception_ptr)> handler_) { handler = std::move(handler_); }
 
+    #ifdef __EMSCRIPTEN__
+    std::function<void(const std::exception_ptr)> handler;
+    #endif
+
 protected:
     template <typename TaskFn, typename ReplyFn>
     void scheduleAndReplyValue(const util::SimpleIdentity tag,
@@ -115,7 +119,9 @@ protected:
         });
     }
 
+    #ifndef __EMSCRIPTEN__
     std::function<void(const std::exception_ptr)> handler;
+    #endif
 };
 
 /// @brief A TaggedScheduler pairs a scheduler with an identifier. Tasklets submitted via a TaggedScheduler

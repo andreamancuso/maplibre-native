@@ -3,7 +3,13 @@
 #include <mbgl/util/constants.hpp>
 #include <mbgl/util/feature.hpp>
 #include <mbgl/util/string.hpp>
+
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
+#endif
+
 #include <mbgl/util/identity.hpp>
 
 #ifdef _MSC_VER

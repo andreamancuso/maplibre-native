@@ -20,7 +20,12 @@
 #include <mbgl/util/string.hpp>
 #include <mbgl/util/exception.hpp>
 #include <mbgl/util/stopwatch.hpp>
+
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
+#endif
 
 #include <unordered_set>
 #include <utility>
