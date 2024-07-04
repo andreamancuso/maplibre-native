@@ -62,6 +62,8 @@ list(APPEND EXTRA_SRC_FILES
         
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/run_loop.cpp
+
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/thread.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/thread_local.cpp
 
@@ -150,6 +152,6 @@ target_link_libraries(mbgl-core
         unordered_dense
 )
 
-set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O3 -pthread")
-set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "-O3 -pthread -s EXPORT_ALL=1")
+set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O3 -pthread --use-port=libjpeg --use-port=sqlite3 --use-port=zlib --use-port=libpng")
+set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "-O3 -pthread --use-port=libjpeg --use-port=zlib --use-port=sqlite3 --use-port=libpng -s USE_GLFW=3 -s USE_WEBGPU=1 -s FULL_ES3=1 -sOFFSCREENCANVAS_SUPPORT -s EXPORT_ALL=1")
 

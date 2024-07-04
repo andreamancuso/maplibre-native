@@ -11,7 +11,7 @@
 #include <mbgl/util/platform.hpp>
 #include <mbgl/util/string.hpp>
 
-void *ThreadMain(void *arg) {
+void *ThreadPoolThread(void *arg) {
     auto threadScheduler = static_cast<mbgl::ThreadedScheduler*>(arg);
 
     auto& settings = mbgl::platform::Settings::getInstance();
@@ -113,11 +113,7 @@ void ThreadedSchedulerBase::terminate() {
 }
 
 int ThreadedSchedulerBase::makeSchedulerThread(pthread_t& thread, size_t index) {
-    auto lambda = []() {
-        emscripten_console_log("inside ThreadMain inside lambda\n");
-    };
-
-    return pthread_create(&thread, NULL, ThreadMain, static_cast<void*>(this));
+    return pthread_create(&thread, NULL, ThreadPoolThread, static_cast<void*>(this));
 }
 
 void ThreadedSchedulerBase::schedule(std::function<void()>&& fn) {

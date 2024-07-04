@@ -2,9 +2,12 @@
 
 #include <mbgl/util/run_loop.hpp>
 
+#include <pthread.h>
 #include <atomic>
 #include <functional>
 #include <stdexcept>
+
+void *AsyncTaskThread(void *arg);
 
 namespace mbgl {
 namespace util {
@@ -12,35 +15,20 @@ namespace util {
 class AsyncTask::Impl {
 public:
     explicit Impl(std::function<void()> fn)
-        : task(std::move(fn)) {
-        // auto* loop = reinterpret_cast<uv_loop_t*>(RunLoop::getLoopHandle());
-        // if (uv_async_init(loop, async, asyncCallback) != 0) {
-        //     throw std::runtime_error("Failed to initialize async.");
-        // }
-
-        // handle()->data = this;
-        // uv_unref(handle());
-    }
+        : m_task(std::move(fn)) {}
 
     ~Impl() {
-        // uv_close(handle(), [](uv_handle_t* h) { delete reinterpret_cast<uv_async_t*>(h); });
+        
     }
 
     void maySend() {
-        // uv_async_send will do the call coalescing for us.
-        // if (uv_async_send(async) != 0) {
-        //     throw std::runtime_error("Failed to async send.");
-        // }
+        int rc = pthread_create(&m_thread, NULL, AsyncTaskThread, static_cast<void*>(this));
     }
 
+    std::function<void()> m_task;
+
 private:
-    // static void asyncCallback(uv_async_t* handle) { reinterpret_cast<Impl*>(handle->data)->task(); }
-
-    // uv_handle_t* handle() { return reinterpret_cast<uv_handle_t*>(async); }
-
-    // uv_async_t* async;
-
-    std::function<void()> task;
+    pthread_t m_thread;
 };
 
 AsyncTask::AsyncTask(std::function<void()>&& fn)
@@ -54,3 +42,11 @@ void AsyncTask::send() {
 
 } // namespace util
 } // namespace mbgl
+
+void *AsyncTaskThread(void *arg) {
+    auto asyncTask = static_cast<mbgl::util::AsyncTask*>(arg);
+
+    asyncTask->m_task();
+
+    pthread_exit((void*)0);
+}

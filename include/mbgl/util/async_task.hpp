@@ -15,6 +15,10 @@ public:
 
     void send();
 
+    #ifdef __EMSCRIPTEN__
+    std::function<void()> m_task;
+    #endif
+
 private:
     class Impl;
     std::unique_ptr<Impl> impl;
