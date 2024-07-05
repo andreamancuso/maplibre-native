@@ -1,6 +1,5 @@
 #include <mbgl/util/timer.hpp>
 
-#include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/string.hpp>
 
 #include <stdexcept>

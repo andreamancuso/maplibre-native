@@ -2,12 +2,13 @@
 
 #include <mbgl/util/run_loop.hpp>
 
+#include <emscripten/console.h>
 #include <pthread.h>
 #include <atomic>
 #include <functional>
 #include <stdexcept>
 
-void *AsyncTaskThread(void *arg);
+// void *AsyncTaskThread(void *arg);
 
 namespace mbgl {
 namespace util {
@@ -22,7 +23,11 @@ public:
     }
 
     void maySend() {
-        int rc = pthread_create(&m_thread, NULL, AsyncTaskThread, static_cast<void*>(this));
+        printf("AsyncTask::maySend()\n");
+        // int rc = pthread_create(&m_thread, NULL, AsyncTaskThread, static_cast<void*>(this));
+        // assert(rc == 0);
+
+        m_task();
     }
 
     std::function<void()> m_task;
@@ -37,16 +42,21 @@ AsyncTask::AsyncTask(std::function<void()>&& fn)
 AsyncTask::~AsyncTask() = default;
 
 void AsyncTask::send() {
+    printf("AsyncTask::send()\n");
     impl->maySend();
+    // m_task();
 }
 
 } // namespace util
 } // namespace mbgl
 
-void *AsyncTaskThread(void *arg) {
-    auto asyncTask = static_cast<mbgl::util::AsyncTask*>(arg);
+// void *AsyncTaskThread(void *arg) {
+//     emscripten_console_log("AsyncTaskThread()\n");
+//     auto asyncTask = static_cast<mbgl::util::AsyncTask*>(arg);
 
-    asyncTask->m_task();
+//     emscripten_console_log("AsyncTaskThread() about to invoke task\n");
+//     asyncTask->m_task();
+//     emscripten_console_log("AsyncTaskThread() invoked task\n");
 
-    pthread_exit((void*)0);
-}
+//     pthread_exit((void*)0);
+// }

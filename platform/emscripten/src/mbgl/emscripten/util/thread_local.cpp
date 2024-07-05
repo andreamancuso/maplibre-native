@@ -9,7 +9,7 @@ namespace util {
 namespace impl {
 
 ThreadLocalBase::ThreadLocalBase() {
-    
+    printf("ThreadLocalBase::ThreadLocalBase()\n");
 }
 
 ThreadLocalBase::~ThreadLocalBase() {
@@ -17,11 +17,11 @@ ThreadLocalBase::~ThreadLocalBase() {
 }
 
 void* ThreadLocalBase::get() const {
-    
+    printf("ThreadLocalBase::get()\n");
 }
 
 void ThreadLocalBase::set(void* ptr) {
-    
+    printf("ThreadLocalBase::set()\n");
 }
 
 } // namespace impl

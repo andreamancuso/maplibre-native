@@ -424,7 +424,7 @@ list(APPEND INCLUDE_FILES
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/premultiply.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/projection.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/range.hpp
-    ${PROJECT_SOURCE_DIR}/include/mbgl/util/run_loop.hpp
+    # ${PROJECT_SOURCE_DIR}/include/mbgl/util/run_loop.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/scoped.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/size.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/string.hpp
@@ -441,8 +441,8 @@ list(APPEND INCLUDE_FILES
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/variant.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/vectors.hpp
     ${PROJECT_SOURCE_DIR}/include/mbgl/util/work_request.hpp
-    ${PROJECT_SOURCE_DIR}/include/mbgl/util/work_task.hpp
-    ${PROJECT_SOURCE_DIR}/include/mbgl/util/work_task_impl.hpp
+    # ${PROJECT_SOURCE_DIR}/include/mbgl/util/work_task.hpp
+    # ${PROJECT_SOURCE_DIR}/include/mbgl/util/work_task_impl.hpp
 )
 list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/actor/mailbox.cpp

@@ -97,6 +97,7 @@ public:
         stoppable.get_future().get();
 
         loop->stop();
+        printf("About to call thread.join()\n");
         thread.join();
     }
 
@@ -104,7 +105,11 @@ public:
     /// can be used to send messages to `Object`. It is safe
     /// to the non-owning reference to outlive this object
     /// and be used after the `Thread<>` gets destroyed.
-    ActorRef<std::decay_t<Object>> actor() { return object.self(); }
+    ActorRef<std::decay_t<Object>> actor() { 
+        printf("Thread::actor() h\n");
+
+        return object.self(); 
+    }
 
     /// Pauses the `Object` thread. It will prevent the object to wake
     /// up from events such as timers and file descriptor I/O. Messages

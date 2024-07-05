@@ -35,7 +35,7 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/database_file_source.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/file_source_manager.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/file_source_request.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/http_file_source.cpp
+        
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/local_file_request.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/local_file_source.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/storage/mbtiles_file_source.cpp
@@ -62,6 +62,12 @@ list(APPEND EXTRA_SRC_FILES
         
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/utf.cpp
 
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/storage/http_file_source.cpp
+
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/work_task.hpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/work_task_impl.hpp
+
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/run_loop.hpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/run_loop.cpp
 
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/thread.cpp
@@ -79,7 +85,7 @@ list(APPEND EXTRA_SRC_FILES
         # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp
         # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_renderer_frontend.cpp
         # ${PROJECT_SOURCE_DIR}/platform/glfw/settings_json.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/map/map_snapshotter.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/map/map_snapshotter.cpp
 
         # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_gl_backend.cpp
 

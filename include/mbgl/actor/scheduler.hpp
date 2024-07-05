@@ -119,6 +119,8 @@ protected:
         });
     }
 
+    mapbox::base::WeakPtrFactory<Scheduler> weakFactory{this};
+
     #ifndef __EMSCRIPTEN__
     std::function<void(const std::exception_ptr)> handler;
     #endif

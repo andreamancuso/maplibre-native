@@ -15,9 +15,7 @@ public:
 
     void send();
 
-    #ifdef __EMSCRIPTEN__
-    std::function<void()> m_task;
-    #endif
+    // std::function<void()> m_task;
 
 private:
     class Impl;

@@ -35,6 +35,9 @@ Style::Impl::Impl(std::shared_ptr<FileSource> fileSource_, float pixelRatio, con
       spriteLoader(std::make_unique<SpriteLoader>(pixelRatio, threadPool_)),
       light(std::make_unique<Light>()),
       observer(&nullObserver) {
+
+    printf("Style::Impl::Impl(): %s %s\n", fileSource->getResourceOptions().cachePath().c_str(), fileSource->getResourceOptions().assetPath().c_str());
+
     spriteLoader->setObserver(this);
     light->setObserver(this);
 }
@@ -42,6 +45,8 @@ Style::Impl::Impl(std::shared_ptr<FileSource> fileSource_, float pixelRatio, con
 Style::Impl::~Impl() = default;
 
 void Style::Impl::loadJSON(const std::string& json_) {
+    printf("Style::Impl::loadJSON()\n");
+
     lastError = nullptr;
     observer->onStyleLoading();
 
@@ -50,6 +55,8 @@ void Style::Impl::loadJSON(const std::string& json_) {
 }
 
 void Style::Impl::loadURL(const std::string& url_) {
+    printf("Style::Impl::loadURL()\n");
+
     if (!fileSource) {
         observer->onStyleError(
             std::make_exception_ptr(util::StyleLoadException("Unable to find resource provider for style url.")));
@@ -82,6 +89,8 @@ void Style::Impl::loadURL(const std::string& url_) {
 }
 
 void Style::Impl::parse(const std::string& json_) {
+    printf("Style::Impl::parse()\n");
+
     Parser parser;
 
     if (auto error = parser.parse(json_)) {
@@ -158,6 +167,8 @@ TransitionOptions Style::Impl::getTransitionOptions() const {
 }
 
 void Style::Impl::addSource(std::unique_ptr<Source> source) {
+    printf("Style::Impl::addSource()\n");
+
     if (sources.get(source->getID())) {
         std::string msg = "Source " + source->getID() + " already exists";
         throw std::runtime_error(msg.c_str());
@@ -202,6 +213,8 @@ Layer* Style::Impl::getLayer(const std::string& id) const {
 }
 
 Layer* Style::Impl::addLayer(std::unique_ptr<Layer> layer, const std::optional<std::string>& before) {
+    printf("Style::Impl::addLayer()\n");
+
     // TODO: verify source
     if (Source* source = sources.get(layer->getSourceID())) {
         if (!source->supportsLayerType(layer->baseImpl->getTypeInfo())) {

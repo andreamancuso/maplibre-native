@@ -236,7 +236,9 @@ MainResourceLoader::MainResourceLoader(const ResourceOptions& resourceOptions, c
           FileSourceManager::get()->getFileSource(FileSourceType::Database, resourceOptions, clientOptions),
           FileSourceManager::get()->getFileSource(FileSourceType::FileSystem, resourceOptions, clientOptions),
           FileSourceManager::get()->getFileSource(FileSourceType::Network, resourceOptions, clientOptions),
-          FileSourceManager::get()->getFileSource(FileSourceType::Mbtiles, resourceOptions, clientOptions))) {}
+          FileSourceManager::get()->getFileSource(FileSourceType::Mbtiles, resourceOptions, clientOptions))) {
+            printf("MainResourceLoader::MainResourceLoader()\n");
+          }
 
 MainResourceLoader::~MainResourceLoader() = default;
 
@@ -245,10 +247,12 @@ bool MainResourceLoader::supportsCacheOnlyRequests() const {
 }
 
 std::unique_ptr<AsyncRequest> MainResourceLoader::request(const Resource& resource, Callback callback) {
+    printf("MainResourceLoader::request()\n");
     return impl->request(resource, std::move(callback));
 }
 
 bool MainResourceLoader::canRequest(const Resource& resource) const {
+    printf("MainResourceLoader::canRequest()\n");
     return impl->canRequest(resource);
 }
 

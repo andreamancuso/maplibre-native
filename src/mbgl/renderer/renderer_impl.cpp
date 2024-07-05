@@ -140,7 +140,9 @@ void Renderer::Impl::render(const RenderTree& renderTree,
 #endif // MLN_RENDER_BACKEND_METAL
 
     // Blocks execution until the renderable is available.
+    printf("before backend.getDefaultRenderable().wait()\n");
     backend.getDefaultRenderable().wait();
+    printf("after backend.getDefaultRenderable().wait()\n");
     context.beginFrame();
 
     if (!staticData) {

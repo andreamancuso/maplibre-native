@@ -96,6 +96,8 @@ public:
     }
 
     void runOnRenderThread(const util::SimpleIdentity tag, std::function<void()>&& fn) override {
+        printf("ThreadedScheduler::runOnRenderThread()\n");
+
         std::shared_ptr<RenderQueue> queue;
         {
             std::lock_guard<std::mutex> lock(taggedRenderQueueLock);
@@ -113,6 +115,8 @@ public:
     }
 
     void runRenderJobs(const util::SimpleIdentity tag, bool closeQueue = false) override {
+        printf("ThreadedScheduler::runRenderJobs()\n");
+
         std::shared_ptr<RenderQueue> queue;
         std::unique_lock<std::mutex> lock(taggedRenderQueueLock);
 

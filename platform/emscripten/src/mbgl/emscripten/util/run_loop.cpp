@@ -1,7 +1,7 @@
 #include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/async_task.hpp>
 #include <mbgl/util/monotonic_timer.hpp>
-#include <mbgl/util/run_loop.hpp>
+#include <mbgl/emscripten/util/run_loop.hpp>
 #include <mbgl/util/thread_local.hpp>
 
 #include <cassert>
@@ -25,9 +25,6 @@ public:
 
 RunLoop::RunLoop(Type type)
     : impl(std::make_unique<Impl>()) {
-
-        printf("RunLoop::RunLoop(Type type)\n");
-
     switch (type) {
         case Type::New:
             
@@ -46,39 +43,46 @@ RunLoop::RunLoop(Type type)
 
 RunLoop::~RunLoop() {
     Scheduler::SetCurrent(nullptr);
-
-    if (impl->type == Type::Default) {
-        return;
-    }
-
-    // Run the loop again to ensure that async
-    // close callbacks have been called. Not needed
-    // for the default main loop because it is only
-    // closed when the application exits.
-    impl->async.reset();
-    runOnce();
-
-    
 }
 
 LOOP_HANDLE RunLoop::getLoopHandle() {
-    printf("RunLoop::getLoopHandle()\n");
+    throw std::runtime_error("Should not be used in emscripten.");
+
+    return nullptr;
 }
 
 void RunLoop::wake() {
     printf("RunLoop::wake()\n");
+
+    impl->async->send();
 }
 
 void RunLoop::run() {
     MBGL_VERIFY_THREAD(tid);
 
     printf("RunLoop::run()\n");
+
+    wake();
+
+    if (impl->type == Type::Default) {
+        // QCoreApplication::instance()->exec();
+    } else {
+        // impl->loop->exec();
+    }
 }
 
 void RunLoop::runOnce() {
     MBGL_VERIFY_THREAD(tid);
 
     printf("RunLoop::runOnce()\n");
+
+    wake();
+
+    if (impl->type == Type::Default) {
+        // QCoreApplication::instance()->processEvents();
+    } else {
+        // impl->loop->processEvents();
+    }
 }
 
 void RunLoop::stop() {
@@ -101,18 +105,6 @@ void RunLoop::waitForEmpty([[maybe_unused]] const mbgl::util::SimpleIdentity tag
 
         runOnce();
     }
-}
-
-void RunLoop::addWatch(int fd, Event event, std::function<void(int, Event)>&& callback) {
-    MBGL_VERIFY_THREAD(tid);
-
-    printf("RunLoop::addWatch()\n");
-}
-
-void RunLoop::removeWatch(int fd) {
-    MBGL_VERIFY_THREAD(tid);
-
-    printf("RunLoop::removeWatch()\n");
 }
 
 } // namespace util
