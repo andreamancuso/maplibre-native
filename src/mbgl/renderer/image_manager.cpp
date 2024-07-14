@@ -23,6 +23,7 @@ void ImageManager::setObserver(ImageManagerObserver* observer_) {
 }
 
 void ImageManager::setLoaded(bool loaded_) {
+    printf("RenderOchestrator::setLoaded() a\n");
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
     if (loaded == loaded_) {
         return;
@@ -31,6 +32,7 @@ void ImageManager::setLoaded(bool loaded_) {
     loaded = loaded_;
 
     if (loaded) {
+        printf("RenderOchestrator::setLoaded() b\n");
         for (const auto& entry : requestors) {
             checkMissingAndNotify(*entry.first, entry.second);
         }
@@ -44,7 +46,9 @@ bool ImageManager::isLoaded() const {
 }
 
 void ImageManager::addImage(Immutable<style::Image::Impl> image_) {
+    printf("RenderOchestrator::addImage() a\n");
     std::lock_guard<std::recursive_mutex> readLock(rwLock);
+    printf("RenderOchestrator::addImage() b\n");
     assert(images.find(image_->id) == images.end());
 
     // Increase cache size if requested image was provided.
@@ -57,6 +61,7 @@ void ImageManager::addImage(Immutable<style::Image::Impl> image_) {
 }
 
 bool ImageManager::updateImage(Immutable<style::Image::Impl> image_) {
+    printf("RenderOchestrator::updateImage() a\n");
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
 
     auto oldImage = images.find(image_->id);
@@ -83,6 +88,8 @@ bool ImageManager::updateImage(Immutable<style::Image::Impl> image_) {
 }
 
 void ImageManager::removeImage(const std::string& id) {
+    printf("RenderOchestrator::removeImage() a\n");
+    
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
     auto it = images.find(id);
     assert(it != images.end());
@@ -101,26 +108,34 @@ void ImageManager::removeImage(const std::string& id) {
 }
 
 const style::Image::Impl* ImageManager::getImage(const std::string& id) const {
+    printf("ImageManager::getImage() a\n");
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
+    printf("ImageManager::getImage() b\n");
     if (auto* image = getSharedImage(id)) {
+        printf("ImageManager::getImage() c\n");
         return image->get();
     }
     return nullptr;
 }
 
 const Immutable<style::Image::Impl>* ImageManager::getSharedImage(const std::string& id) const {
+    printf("ImageManager::getSharedImage() a\n");
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
+    printf("ImageManager::getSharedImage() b\n");
     const auto it = images.find(id);
+    printf("ImageManager::getSharedImage() c\n");
     if (it != images.end()) {
+        printf("ImageManager::getSharedImage() d\n");
         return &(it->second);
     }
     return nullptr;
 }
 
 void ImageManager::getImages(ImageRequestor& requestor, ImageRequestPair&& pair) {
+    printf("ImageManager::getImages() a\n");
     // remove previous requests from this tile
     removeRequestor(requestor);
-
+    printf("ImageManager::getImages() b\n");
     std::lock_guard<std::recursive_mutex> readWriteLock(rwLock);
 
     // If all the icon dependencies are already present ((i.e. if they've been addeded via
@@ -130,17 +145,25 @@ void ImageManager::getImages(ImageRequestor& requestor, ImageRequestPair&& pair)
     // to give the user a chance to provide the icon. If they are not provided
     // by the next frame we'll assume they are permanently missing.
     if (!isLoaded()) {
+        printf("ImageManager::getImages() c\n");
         bool hasAllDependencies = true;
+        printf("ImageManager::getImages() d\n");
         for (const auto& dependency : pair.first) {
+            printf("ImageManager::getImages() e\n");
             if (images.find(dependency.first) == images.end()) {
+                printf("ImageManager::getImages() f\n");
                 hasAllDependencies = false;
                 break;
             }
         }
 
+        printf("ImageManager::getImages() g\n");
+
         if (hasAllDependencies) {
+            printf("ImageManager::getImages() h\n");
             notify(requestor, pair);
         } else {
+            printf("ImageManager::getImages() i\n");
             requestors.emplace(&requestor, std::move(pair));
         }
     } else {

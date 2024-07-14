@@ -10,6 +10,7 @@ namespace util {
 class Timer::Impl {
 public:
     Impl() {
+        printf("Timer::Impl::Impl()\n");
         // auto* loop = reinterpret_cast<uv_loop_t*>(RunLoop::getLoopHandle());
         // if (uv_timer_init(loop, timer) != 0) {
         //     throw std::runtime_error("Failed to initialize timer.");
@@ -24,6 +25,7 @@ public:
     }
 
     void start(uint64_t timeout, uint64_t repeat, std::function<void()>&& cb_) {
+        printf("Timer::start()\n");
         cb = std::move(cb_);
 
         // Update the event loop’s concept of “now”.
@@ -39,6 +41,7 @@ public:
     }
 
     void stop() {
+        printf("Timer::stop()\n");
         cb = nullptr;
         // if (uv_timer_stop(timer) != 0) {
         //     throw std::runtime_error("Failed to stop timer.");

@@ -141,10 +141,22 @@ public:
     /// @return
     const std::shared_ptr<Scheduler>& get() const noexcept { return scheduler; }
 
-    void schedule(std::function<void()>&& fn) { scheduler->schedule(tag, std::move(fn)); }
-    void runOnRenderThread(std::function<void()>&& fn) { scheduler->runOnRenderThread(tag, std::move(fn)); }
-    void runRenderJobs(bool closeQueue = false) { scheduler->runRenderJobs(tag, closeQueue); }
-    void waitForEmpty() const noexcept { scheduler->waitForEmpty(tag); }
+    void schedule(std::function<void()>&& fn) { 
+        printf("TaggedScheduler::schedule()\n"); 
+        scheduler->schedule(tag, std::move(fn)); 
+    }
+    void runOnRenderThread(std::function<void()>&& fn) { 
+        printf("TaggedScheduler::runOnRenderThread()\n");
+        scheduler->runOnRenderThread(tag, std::move(fn)); 
+    }
+    void runRenderJobs(bool closeQueue = false) { 
+        printf("TaggedScheduler::runRenderJobs()\n");
+        scheduler->runRenderJobs(tag, closeQueue); 
+    }
+    void waitForEmpty() const noexcept {
+        printf("TaggedScheduler::waitForEmpty()\n");
+        scheduler->waitForEmpty(tag); 
+    }
 
     /// type. Note: the task result is copied and passed by value.
     template <typename TaskFn, typename ReplyFn>

@@ -7,6 +7,7 @@ Response::Response(const Response& res) {
 }
 
 Response& Response::operator=(const Response& res) {
+    printf("Response::operator= a\n");
     error = res.error ? std::make_unique<Error>(*res.error) : nullptr;
     noContent = res.noContent;
     notModified = res.notModified;
@@ -21,6 +22,8 @@ Response& Response::operator=(const Response& res) {
 Response::Error::Error(Reason reason_, std::string message_, std::optional<Timestamp> retryAfter_)
     : reason(reason_),
       message(std::move(message_)),
-      retryAfter(std::move(retryAfter_)) {}
+      retryAfter(std::move(retryAfter_)) {
+        printf("Response::Error::Error()\n");
+      }
 
 } // namespace mbgl

@@ -14,9 +14,12 @@ std::mutex NetworkStatus::mtx;
 std::unordered_set<util::AsyncTask *> NetworkStatus::observers;
 
 NetworkStatus::Status NetworkStatus::Get() {
+    printf("NetworkStatus::Get() a\n");
     if (online) {
+        printf("NetworkStatus::Get() b\n");
         return Status::Online;
     } else {
+        printf("NetworkStatus::Get() c\n");
         return Status::Offline;
     }
 }

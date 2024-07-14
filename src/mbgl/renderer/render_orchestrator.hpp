@@ -184,7 +184,7 @@ private:
 
     RendererObserver* observer;
 
-    ZoomHistory zoomHistory;
+    ZoomHistory zoomHistory = ZoomHistory{};
     TransformState transformState;
 
     std::shared_ptr<GlyphManager> glyphManager;

@@ -85,7 +85,7 @@ public:
         terminate();
         for (auto& thread : threads) {
             assert(std::this_thread::get_id() != thread.get_id());
-            printf("About to call thread.join()\n");
+            printf("ThreadedScheduler::~ThreadedScheduler(): about to call thread.join()\n");
             thread.join();
         }
     }

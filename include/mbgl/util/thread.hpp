@@ -43,33 +43,50 @@ class Thread {
 public:
     template <typename TupleArgs>
     Thread(std::function<void()> prioritySetter_, const std::string& name, TupleArgs&& args) {
+        // printf("Thread::Thread a()\n");
         std::promise<void> running_;
+        // printf("Thread::Thread b()\n");
         running = running_.get_future();
+        // printf("Thread::Thread c()\n");
         thread = std::thread([this,
                               name,
                               capturedArgs = std::forward<TupleArgs>(args),
                               runningPromise = std::move(running_),
                               prioritySetter = std::move(prioritySetter_)]() mutable {
+            // printf("Thread::Thread d()\n");
             platform::setCurrentThreadName(name);
+            // printf("Thread::Thread e()\n");
             if (prioritySetter) prioritySetter();
+            // printf("Thread::Thread f()\n");
             platform::attachThread();
+            // printf("Thread::Thread g()\n");
 
             // narrowing the scope to release the Object before we detach the thread
             {
+                // printf("Thread::Thread h()\n");
                 util::RunLoop loop_(util::RunLoop::Type::New);
+                // printf("Thread::Thread i()\n");
                 loop = &loop_;
+                // printf("Thread::Thread l()\n");
                 EstablishedActor<Object> establishedActor(loop_, object, std::move(capturedArgs));
-
+                // printf("Thread::Thread m()\n");
                 runningPromise.set_value();
+                // printf("Thread::Thread n()\n");
 
                 loop->run();
+                // printf("Thread::Thread o()\n");
 
                 (void)establishedActor;
+                // printf("Thread::Thread p()\n");
 
                 loop = nullptr;
             }
 
+            // printf("Thread::Thread q()\n");
+
             platform::detachThread();
+
+            // printf("Thread::Thread r()\n");
         });
     }
 
@@ -97,7 +114,7 @@ public:
         stoppable.get_future().get();
 
         loop->stop();
-        printf("About to call thread.join()\n");
+        printf("Thread::~Thread() about to call thread.join()\n");
         thread.join();
     }
 

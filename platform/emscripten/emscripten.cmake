@@ -53,7 +53,7 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/image.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/jpeg_reader.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/webp_reader.cpp
-        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/logging_stderr.cpp
+        
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/monotonic_timer.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/png_reader.cpp
         ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/util/png_writer.cpp
@@ -79,21 +79,28 @@ list(APPEND EXTRA_SRC_FILES
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/async_task.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/timer.cpp
         
-        # ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/util/logging.cpp
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/logging_stderr.cpp
+
+        ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/util/logging.cpp
 
         # GLFW
-        # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_renderer_frontend.cpp
-        # ${PROJECT_SOURCE_DIR}/platform/glfw/settings_json.cpp
+        ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp
+        ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_renderer_frontend.cpp
+        ${PROJECT_SOURCE_DIR}/platform/glfw/settings_json.cpp
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/map/map_snapshotter.cpp
 
-        # ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_gl_backend.cpp
+        ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_gl_backend.cpp
 
         ${PROJECT_SOURCE_DIR}/platform/emscripten/src/mbgl/emscripten/headless_backend_glfw.cpp
         ${PROJECT_SOURCE_DIR}/platform/windows/src/gl_functions.cpp
 )
 
 add_library(mbgl-core STATIC)
+
+set_property(
+    SOURCE ${PROJECT_SOURCE_DIR}/platform/glfw/glfw_view.cpp
+    PROPERTY COMPILE_DEFINITIONS MAPBOX_PUCK_ASSETS_PATH=\"${PROJECT_SOURCE_DIR}/platform/glfw/assets/\"
+)
 
 target_compile_definitions(
     mbgl-core
@@ -158,6 +165,6 @@ target_link_libraries(mbgl-core
         unordered_dense
 )
 
-set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O3 -pthread --use-port=libjpeg --use-port=sqlite3 --use-port=zlib --use-port=libpng")
-set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "-O3 -pthread --use-port=libjpeg --use-port=zlib --use-port=sqlite3 --use-port=libpng -s USE_GLFW=3 -s USE_WEBGPU=1 -s FULL_ES3=1 -sOFFSCREENCANVAS_SUPPORT -s EXPORT_ALL=1")
+set_target_properties(mbgl-core PROPERTIES COMPILE_FLAGS "-O0 -pthread --use-port=libjpeg --use-port=sqlite3 --use-port=zlib --use-port=libpng")
+set_target_properties(mbgl-core PROPERTIES LINK_FLAGS "-O0 -pthread --use-port=libjpeg --use-port=zlib --use-port=sqlite3 --use-port=libpng -s USE_GLFW=3 -s USE_WEBGPU=1 -s FULL_ES3=1 -sOFFSCREENCANVAS_SUPPORT -s EXPORT_ALL=1")
 

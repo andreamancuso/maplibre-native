@@ -52,15 +52,11 @@ LOOP_HANDLE RunLoop::getLoopHandle() {
 }
 
 void RunLoop::wake() {
-    printf("RunLoop::wake()\n");
-
     impl->async->send();
 }
 
 void RunLoop::run() {
     MBGL_VERIFY_THREAD(tid);
-
-    printf("RunLoop::run()\n");
 
     wake();
 
@@ -74,8 +70,6 @@ void RunLoop::run() {
 void RunLoop::runOnce() {
     MBGL_VERIFY_THREAD(tid);
 
-    printf("RunLoop::runOnce()\n");
-
     wake();
 
     if (impl->type == Type::Default) {
@@ -86,11 +80,11 @@ void RunLoop::runOnce() {
 }
 
 void RunLoop::stop() {
-    printf("RunLoop::stop()\n");
+    
 }
 
 void RunLoop::waitForEmpty([[maybe_unused]] const mbgl::util::SimpleIdentity tag) {
-    printf("RunLoop::waitForEmpty()\n");
+    
 
     while (true) {
         std::size_t remaining;

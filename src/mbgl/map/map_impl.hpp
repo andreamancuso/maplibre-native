@@ -24,7 +24,9 @@ class ShaderRegistry;
 
 struct StillImageRequest {
     StillImageRequest(Map::StillImageCallback&& callback_)
-        : callback(std::move(callback_)) {}
+        : callback(std::move(callback_)) {
+            printf("StillImageRequest::StillImageRequest()\n");
+        }
 
     Map::StillImageCallback callback;
 };

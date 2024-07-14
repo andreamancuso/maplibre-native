@@ -86,6 +86,8 @@ public:
     ~OnlineFileSourceThread() { NetworkStatus::Unsubscribe(&reachability); }
 
     void request(AsyncRequest* req, Resource resource, const ActorRef<FileSourceRequest>& ref) {
+        printf("OnlineFileSourceThread::request()\n");
+
         auto callback = [ref](const Response& res) {
             ref.invoke(&FileSourceRequest::setResponse, res);
         };
@@ -100,6 +102,7 @@ public:
     }
 
     void add(OnlineFileRequest* req) {
+        printf("OnlineFileSourceThread::add()\n");
         allRequests.insert(req);
         if (resourceTransform) {
             // Request the ResourceTransform actor a new url and replace the
@@ -124,6 +127,7 @@ public:
     }
 
     void activateOrQueueRequest(OnlineFileRequest* req) {
+        printf("OnlineFileSourceThread::activateOrQueueRequest()\n");
         assert(allRequests.find(req) != allRequests.end());
         assert(activeRequests.find(req) == activeRequests.end());
         assert(!req->request);
@@ -138,6 +142,7 @@ public:
     void queueRequest(OnlineFileRequest* req) { pendingRequests.insert(req); }
 
     void activateRequest(OnlineFileRequest* req) {
+        printf("OnlineFileSourceThread::activateRequest()\n");
         auto callback = [=](const Response& response) {
             activeRequests.erase(req);
             req->request.reset();
@@ -321,6 +326,7 @@ public:
               clientOptions.clone())) {}
 
     std::unique_ptr<AsyncRequest> request(Callback callback, Resource res) {
+        printf("OnlineFileSource::Impl::request()\n");
         auto req = std::make_unique<FileSourceRequest>(std::move(callback));
         req->onCancel(
             [actorRef = thread->actor(), req = req.get()]() { actorRef.invoke(&OnlineFileSourceThread::cancel, req); });
@@ -476,6 +482,7 @@ Timestamp interpolateExpiration(const Timestamp& current, std::optional<Timestam
 }
 
 void OnlineFileRequest::activate() {
+    printf("OnlineFileRequest::activate()\n");
     // Force an immediate first request if we don't have an expiration time.
     Duration timeout = Duration::zero();
     if (resource.priorExpires) {
@@ -485,6 +492,7 @@ void OnlineFileRequest::activate() {
 }
 
 void OnlineFileRequest::schedule(Duration timeout) {
+    printf("OnlineFileRequest::schedule()\n");
     if (impl.isPending(this) || impl.isActive(this)) {
         // There's already a request in progress; don't start another one.
         return;

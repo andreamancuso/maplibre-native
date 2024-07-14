@@ -46,27 +46,36 @@ Map::Map(std::unique_ptr<Impl> impl_)
 Map::~Map() = default;
 
 void Map::renderStill(StillImageCallback callback) {
+    printf("Map::renderStill() a\n");
     if (!callback) {
+        printf("Map::renderStill() b\n");
         Log::Error(Event::General, "StillImageCallback not set");
         return;
     }
 
     if (impl->mode != MapMode::Static && impl->mode != MapMode::Tile) {
+        printf("Map::renderStill() c\n");
         callback(std::make_exception_ptr(util::MisuseException("Map is not in static or tile image render modes")));
         return;
     }
 
     if (impl->stillImageRequest) {
+        printf("Map::renderStill() d\n");
         callback(std::make_exception_ptr(util::MisuseException("Map is currently rendering an image")));
         return;
     }
 
     if (impl->style->impl->getLastError()) {
+        printf("Map::renderStill() e\n");
         callback(impl->style->impl->getLastError());
         return;
     }
 
+    printf("Map::renderStill() f\n");
+
     impl->stillImageRequest = std::make_unique<StillImageRequest>(std::move(callback));
+
+    printf("Map::renderStill() g\n");
 
     impl->onUpdate();
 }

@@ -53,16 +53,12 @@ public:
     /// to, after receiving the callback, call RunLoop::runOnce() from the
     /// same thread as the Map object lives.
     void setPlatformCallback(std::function<void()> callback) {
-        printf("RunLoop::setPlatformCallback()\n"); 
-
         platformCallback = std::move(callback); 
     }
 
     // Invoke fn(args...) on this RunLoop.
     template <class Fn, class... Args>
     void invoke(Priority priority, Fn&& fn, Args&&... args) {
-        printf("RunLoop::invoke()\n");
-
         push(priority, WorkTask::make(std::forward<Fn>(fn), std::forward<Args>(args)...));
     }
 
@@ -75,14 +71,14 @@ public:
     // Post the cancellable work fn(args...) to this RunLoop.
     template <class Fn, class... Args>
     std::unique_ptr<AsyncRequest> invokeCancellable(Fn&& fn, Args&&... args) {
-        printf("RunLoop::invokeCancellable()\n");
-
         std::shared_ptr<WorkTask> task = WorkTask::make(std::forward<Fn>(fn), std::forward<Args>(args)...);
         push(Priority::Default, task);
         return std::make_unique<WorkRequest>(task);
     }
 
-    void schedule(std::function<void()>&& fn) override { invoke(std::move(fn)); }
+    void schedule(std::function<void()>&& fn) override { 
+        invoke(std::move(fn)); 
+    }
     void schedule(const util::SimpleIdentity, std::function<void()>&& fn) override { schedule(std::move(fn)); }
     ::mapbox::base::WeakPtr<Scheduler> makeWeakPtr() override { return weakFactory.makeWeakPtr(); }
 
@@ -100,7 +96,6 @@ private:
 
     // Adds a WorkTask to the queue, and wakes it up.
     void push(Priority priority, std::shared_ptr<WorkTask> task) {
-        printf("RunLoop::push()\n");
 
         std::lock_guard<std::mutex> lock(mutex);
         if (priority == Priority::High) {
@@ -108,7 +103,7 @@ private:
         } else {
             defaultQueue.emplace(std::move(task));
         }
-        wake();
+        // wake();
 
         if (platformCallback) {
             platformCallback();
@@ -116,8 +111,6 @@ private:
     }
 
     void process() {
-        printf("RunLoop::process()\n");
-
         std::shared_ptr<WorkTask> task;
         std::unique_lock<std::mutex> lock(mutex);
         while (true) {

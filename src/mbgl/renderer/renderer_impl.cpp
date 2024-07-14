@@ -74,6 +74,8 @@ void Renderer::Impl::setObserver(RendererObserver* observer_) {
 
 void Renderer::Impl::render(const RenderTree& renderTree,
                             [[maybe_unused]] const std::shared_ptr<UpdateParameters>& updateParameters) {
+    printf("Renderer::Impl::render() a\n");
+    
     MLN_TRACE_FUNC();
     auto& context = backend.getContext();
 #if MLN_RENDER_BACKEND_METAL

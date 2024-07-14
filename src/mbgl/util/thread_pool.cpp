@@ -27,10 +27,12 @@ std::thread ThreadedSchedulerBase::makeSchedulerThread(size_t index) {
 }
 
 void ThreadedSchedulerBase::schedule(std::function<void()>&& fn) {
+    printf("ddddd\n"); 
     schedule(uniqueID, std::move(fn));
 }
 
 void ThreadedSchedulerBase::schedule(const util::SimpleIdentity tag, std::function<void()>&& fn) {
+    printf("[base] ThreadedSchedulerBase::schedule()\n");
     assert(fn);
     if (!fn) return;
 

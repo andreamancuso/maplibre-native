@@ -12,26 +12,31 @@ namespace mbgl {
 namespace platform {
 
 std::string getCurrentThreadName() {
+    // printf("platform::getCurrentThreadName()\n");
     char name[32] = "unknown";
 
     return name;
 }
 
 void setCurrentThreadName(const std::string& name) {
-
+    // printf("platform::setCurrentThreadName()\n");
 }
 
 void makeThreadLowPriority() {
-
+    // printf("platform::makeThreadLowPriority()\n");
 }
 
 void setCurrentThreadPriority(double priority) {
-    
+    // printf("platform::setCurrentThreadPriority()\n");
 }
 
-void attachThread() {}
+void attachThread() {
+    // printf("platform::attachThread()\n");
+}
 
-void detachThread() {}
+void detachThread() {
+    // printf("platform::detachThread()\n");
+}
 
 } // namespace platform
 } // namespace mbgl

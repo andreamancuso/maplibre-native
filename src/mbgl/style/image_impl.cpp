@@ -46,15 +46,23 @@ Image::Impl::Impl(std::string id_,
       stretchX(std::move(stretchX_)),
       stretchY(std::move(stretchY_)),
       content(std::move(content_)) {
+
+    printf("Image::Impl::Impl() a, id: %s\n", id.c_str());
+
     if (!image.valid()) {
+        printf("Image::Impl::Impl() b\n");
         throw util::StyleImageException("dimensions may not be zero");
     } else if (pixelRatio <= 0) {
+        printf("Image::Impl::Impl() c\n");
         throw util::StyleImageException("pixelRatio may not be <= 0");
     } else if (!validateStretch(stretchX, static_cast<float>(image.size.width))) {
+        printf("Image::Impl::Impl() d\n");
         throw util::StyleImageException("stretchX is out of bounds or overlapping");
     } else if (!validateStretch(stretchY, static_cast<float>(image.size.height))) {
+        printf("Image::Impl::Impl() e\n");
         throw util::StyleImageException("stretchY is out of bounds or overlapping");
     } else if (content && !validateContent(*content, image.size)) {
+        printf("Image::Impl::Impl() f\n"); 
         throw util::StyleImageException("content area is invalid");
     }
 }

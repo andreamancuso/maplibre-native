@@ -131,7 +131,9 @@ class SnapshotterRendererFrontend final : public RendererFrontend {
 public:
     SnapshotterRendererFrontend(Size size, float pixelRatio, std::optional<std::string> localFontFamily)
         : renderer(std::make_unique<util::Thread<SnapshotterRenderer>>(
-              "Snapshotter", size, pixelRatio, std::move(localFontFamily))) {}
+              "Snapshotter", size, pixelRatio, std::move(localFontFamily))) {
+                printf("SnapshotterRendererFrontend::SnapshotterRendererFrontend()\n");
+              }
 
     ~SnapshotterRendererFrontend() override = default;
 
@@ -143,6 +145,7 @@ public:
     }
 
     void update(std::shared_ptr<UpdateParameters> parameters) override {
+        printf("SnapshotterRendererFrontend::update()\n");
         updateParameters = std::move(parameters);
         renderer->actor().invoke(&SnapshotterRenderer::update, updateParameters);
     }
@@ -156,9 +159,14 @@ public:
         return defaultTransformState;
     }
 
-    PremultipliedImage takeImage() { return renderer->actor().ask(&SnapshotterRenderer::takeImage).get(); }
+    PremultipliedImage takeImage() {
+        printf("SnapshotterRendererFrontend::takeImage()\n");
+
+        return renderer->actor().ask(&SnapshotterRenderer::takeImage).get(); 
+    }
 
     const mbgl::TaggedScheduler& getThreadPool() const override {
+        printf("SnapshotterRendererFrontend::getThreadPool()\n");
         return renderer->actor().ask(&SnapshotterRenderer::getThreadPool).get();
     }
 
@@ -181,7 +189,9 @@ public:
               *this,
               MapOptions().withMapMode(MapMode::Static).withSize(size).withPixelRatio(pixelRatio),
               resourceOptions,
-              clientOptions) {}
+              clientOptions) {
+                printf("MapSnapshotter::Impl::Impl()\n");
+              }
 
     void setRegion(const LatLngBounds& region) {
         mbgl::EdgeInsets insets{0, 0, 0, 0};
@@ -190,18 +200,23 @@ public:
     }
 
     void snapshot(MapSnapshotter::Callback callback) {
+        printf("MapSnapshotter::Impl::snapshot() a\n");
         if (!callback) {
+            printf("MapSnapshotter::Impl::snapshot() b\n");
             Log::Error(Event::General, "MapSnapshotter::Callback is not set");
             return;
         }
 
         if (renderStillCallback) {
+            printf("MapSnapshotter::Impl::snapshot() c\n");
             callback(std::make_exception_ptr(util::MisuseException("MapSnapshotter is currently rendering an image")),
                      PremultipliedImage(),
                      {},
                      {},
                      {});
         }
+
+        printf("MapSnapshotter::Impl::snapshot() d\n");
 
         renderStillCallback = std::make_unique<Actor<MapSnapshotter::Callback>>(
             *Scheduler::GetCurrent(),
@@ -210,11 +225,13 @@ public:
                                              Attributions attributions,
                                              PointForFn pfn,
                                              LatLngForFn latLonFn) {
+                                                printf("MapSnapshotter::Impl::snapshot() renderStillCallback a\n");
                 cb(std::move(ptr), std::move(image), std::move(attributions), std::move(pfn), std::move(latLonFn));
                 renderStillCallback.reset();
             });
 
         map.renderStill([this, actorRef = renderStillCallback->self()](const std::exception_ptr& error) {
+            printf("MapSnapshotter::Impl::snapshot() renderStill a\n");
             // Create lambda that captures the current transform state
             // and can be used to translate for geographic to screen
             // coordinates
@@ -253,12 +270,24 @@ public:
                             std::move(pointForFn),
                             std::move(latLngForFn));
         });
+
+        printf("MapSnapshotter::Impl::snapshot() e\n");
     }
 
     // MapObserver overrides
-    void onDidFailLoadingMap(MapLoadError, const std::string& error) override { observer.onDidFailLoadingStyle(error); }
-    void onDidFinishLoadingStyle() override { observer.onDidFinishLoadingStyle(); }
-    void onStyleImageMissing(const std::string& image) override { observer.onStyleImageMissing(image); }
+    void onDidFailLoadingMap(MapLoadError, const std::string& error) override {
+        printf("MapSnapshotter::Impl::onDidFailLoadingMap() a\n");
+        observer.onDidFailLoadingStyle(error);
+    }
+    void onDidFinishLoadingStyle() override { 
+        printf("MapSnapshotter::Impl::onDidFinishLoadingStyle() a\n");
+        observer.onDidFinishLoadingStyle();
+    }
+    void onStyleImageMissing(const std::string& image) override {
+        printf("MapSnapshotter::Impl::onStyleImageMissing() a\n");
+
+        observer.onStyleImageMissing(image);
+    }
 
     Map& getMap() { return map; }
     const Map& getMap() const { return map; }
@@ -290,6 +319,7 @@ MapSnapshotter::MapSnapshotter(Size size,
 MapSnapshotter::~MapSnapshotter() = default;
 
 void MapSnapshotter::setStyleURL(const std::string& styleURL) {
+    printf("MapSnapshotter::setStyleURL() a\n");
     impl->getMap().getStyle().loadURL(styleURL);
 }
 
@@ -306,6 +336,7 @@ std::string MapSnapshotter::getStyleJSON() const {
 }
 
 void MapSnapshotter::setSize(const Size& size) {
+    printf("MapSnapshotter::setSize() a\n");
     impl->getMap().setSize(size);
     impl->getRenderer().setSize(size);
 }

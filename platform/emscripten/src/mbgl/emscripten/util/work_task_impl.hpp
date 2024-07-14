@@ -18,8 +18,12 @@ public:
     void operator()() override {
         // Lock the mutex while processing so that cancel() will block.
         std::lock_guard<std::recursive_mutex> lock(mutex);
+        // printf("WorkTaskImpl::operator() about to determine whether task is canceled\n");
         if (!*canceled) {
+            // printf("WorkTaskImpl::operator() task is not canceled\n");
             invoke(std::make_index_sequence<std::tuple_size_v<P>>{});
+        } else {
+            printf("WorkTaskImpl::operator() task is canceled\n");
         }
     }
 

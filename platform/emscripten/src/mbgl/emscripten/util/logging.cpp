@@ -1,4 +1,4 @@
-// #include <mbgl/actor/scheduler.hpp>
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/platform/settings.hpp>
 #include <mbgl/util/enum.hpp>
 #include <mbgl/util/logging.hpp>
@@ -27,9 +27,17 @@ public:
     Impl() {}
 
     void record(EventSeverity severity, Event event, int64_t code, const std::string& msg) try {
+        printf("Log::Impl::record() a\n");
         if (useThread[underlying_type(severity)]) {
+            printf("Log::Impl::record() b\n");
             auto threadName = platform::getCurrentThreadName();
-            // scheduler->schedule([=]() { Log::record(severity, event, code, msg, threadName); });
+            printf("Log::Impl::record() c\n");
+            scheduler->schedule([=]() { 
+                printf("Log::Impl::record() e\n");
+                Log::record(severity, event, code, msg, threadName); 
+                printf("Log::Impl::record() f\n");
+            });
+            printf("Log::Impl::record() d\n");
         } else {
             Log::record(severity, event, code, msg, {});
         }
@@ -43,7 +51,7 @@ public:
     }
 
 private:
-    // const std::shared_ptr<Scheduler> scheduler;
+    const std::shared_ptr<Scheduler> scheduler;
 };
 
 Log::Log()
