@@ -998,13 +998,10 @@ list(APPEND SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/mbgl/util/work_request.cpp
 )
 
-list(APPEND SRC_FILES
-    ${PROJECT_SOURCE_DIR}/src/mbgl/util/logging.cpp
-)
-
 if (NOT MLN_WITH_EMSCRIPTEN)
     # these contain references to std::thread which appear to be unsupported in emscripten
     list(APPEND SRC_FILES
+        ${PROJECT_SOURCE_DIR}/src/mbgl/util/logging.cpp
         ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.cpp
         ${PROJECT_SOURCE_DIR}/src/mbgl/util/thread_pool.hpp
     )
