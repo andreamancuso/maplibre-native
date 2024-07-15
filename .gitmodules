@@ -49,3 +49,15 @@
 [submodule "vendor/unordered_dense"]
 	path = vendor/unordered_dense
 	url = https://github.com/martinus/unordered_dense.git
+[submodule "vendor/emscripten"]
+	path = vendor/emscripten
+	url = https://github.com/emscripten-core/emscripten.git
+[submodule "vendor/libwebp"]
+	path = vendor/libwebp
+	url = https://github.com/webmproject/libwebp.git
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "vendor/OpenGL-Registry"]
+	path = vendor/OpenGL-Registry
+	url = https://github.com/KhronosGroup/OpenGL-Registry.git

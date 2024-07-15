@@ -29,6 +29,7 @@ public:
           mbtilesFileSource(std::move(mbtilesFileSource_)) {}
 
     void request(AsyncRequest* req, const Resource& resource, const ActorRef<FileSourceRequest>& ref) {
+        printf("MainResourceLoaderThread::request() %d\n");
         auto callback = [ref](const Response& res) {
             ref.invoke(&FileSourceRequest::setResponse, res);
         };
@@ -161,12 +162,17 @@ public:
           clientOptions(clientOptions_.clone()) {}
 
     std::unique_ptr<AsyncRequest> request(const Resource& resource, Callback callback) {
+        printf("MainResourceLoaderThread::Impl::request() a: %s\n", resource.url.c_str());
         auto req = std::make_unique<FileSourceRequest>(std::move(callback));
+        printf("MainResourceLoaderThread::Impl::request() b\n");
 
         req->onCancel([actorRef = thread->actor(), req = req.get()]() {
+            printf("MainResourceLoaderThread::Impl::request() c\n");
             actorRef.invoke(&MainResourceLoaderThread::cancel, req);
+            printf("MainResourceLoaderThread::Impl::request() d\n");
         });
         thread->actor().invoke(&MainResourceLoaderThread::request, req.get(), resource, req->actor());
+        printf("MainResourceLoaderThread::Impl::request() e\n");
         return req;
     }
 
@@ -236,7 +242,9 @@ MainResourceLoader::MainResourceLoader(const ResourceOptions& resourceOptions, c
           FileSourceManager::get()->getFileSource(FileSourceType::Database, resourceOptions, clientOptions),
           FileSourceManager::get()->getFileSource(FileSourceType::FileSystem, resourceOptions, clientOptions),
           FileSourceManager::get()->getFileSource(FileSourceType::Network, resourceOptions, clientOptions),
-          FileSourceManager::get()->getFileSource(FileSourceType::Mbtiles, resourceOptions, clientOptions))) {}
+          FileSourceManager::get()->getFileSource(FileSourceType::Mbtiles, resourceOptions, clientOptions))) {
+            printf("MainResourceLoader::MainResourceLoader()\n");
+          }
 
 MainResourceLoader::~MainResourceLoader() = default;
 
@@ -245,10 +253,12 @@ bool MainResourceLoader::supportsCacheOnlyRequests() const {
 }
 
 std::unique_ptr<AsyncRequest> MainResourceLoader::request(const Resource& resource, Callback callback) {
+    printf("MainResourceLoader::request()\n");
     return impl->request(resource, std::move(callback));
 }
 
 bool MainResourceLoader::canRequest(const Resource& resource) const {
+    printf("MainResourceLoader::canRequest()\n");
     return impl->canRequest(resource);
 }
 

@@ -23,6 +23,7 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
                                    const gfx::ContextMode contextMode,
                                    const std::optional<std::string>& localFontFamily,
                                    bool invalidateOnUpdate_)
+     
     : size(size_),
       pixelRatio(pixelRatio_),
       frameTime(0),
@@ -32,7 +33,8 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
           contextMode)),
       asyncInvalidate([this] { renderFrame(); }),
       invalidateOnUpdate(invalidateOnUpdate_),
-      renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily)) {}
+      renderer(std::make_unique<Renderer>(*getBackend(), pixelRatio, localFontFamily))
+       {}
 
 HeadlessFrontend::~HeadlessFrontend() = default;
 
@@ -162,7 +164,7 @@ void HeadlessFrontend::renderOnce(Map&) {
 }
 
 void HeadlessFrontend::renderFrame() {
-    if (renderer && updateParameters) {
+    if (updateParameters) {
         auto startTime = mbgl::util::MonotonicTimer::now();
         gfx::BackendScope guard{*getBackend()};
 

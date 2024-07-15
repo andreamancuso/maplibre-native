@@ -45,7 +45,8 @@ Map::Impl::Impl(RendererFrontend& frontend_,
                 MapObserver& observer_,
                 std::shared_ptr<FileSource> fileSource_,
                 const MapOptions& mapOptions)
-    : observer(observer_),
+    : 
+      observer(observer_),
       rendererFrontend(frontend_),
       transform(observer, mapOptions.constrainMode(), mapOptions.viewportMode()),
       mode(mapOptions.mapMode()),

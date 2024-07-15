@@ -19,6 +19,7 @@ public:
 
         registerFileSourceFactory(FileSourceType::Asset,
                                   [](const ResourceOptions& resourceOptions, const ClientOptions& clientOptions) {
+                                    
                                       return std::make_unique<AssetFileSource>(resourceOptions, clientOptions);
                                   });
 

@@ -102,6 +102,10 @@ public:
     /// Set a function to be called when an exception occurs on a thread controlled by the scheduler
     void setExceptionHandler(std::function<void(const std::exception_ptr)> handler_) { handler = std::move(handler_); }
 
+    #ifdef __EMSCRIPTEN__
+    std::function<void(const std::exception_ptr)> handler;
+    #endif
+
 protected:
     template <typename TaskFn, typename ReplyFn>
     void scheduleAndReplyValue(const util::SimpleIdentity tag,
@@ -115,7 +119,11 @@ protected:
         });
     }
 
+    mapbox::base::WeakPtrFactory<Scheduler> weakFactory{this};
+
+    #ifndef __EMSCRIPTEN__
     std::function<void(const std::exception_ptr)> handler;
+    #endif
 };
 
 /// @brief A TaggedScheduler pairs a scheduler with an identifier. Tasklets submitted via a TaggedScheduler
@@ -133,10 +141,22 @@ public:
     /// @return
     const std::shared_ptr<Scheduler>& get() const noexcept { return scheduler; }
 
-    void schedule(std::function<void()>&& fn) { scheduler->schedule(tag, std::move(fn)); }
-    void runOnRenderThread(std::function<void()>&& fn) { scheduler->runOnRenderThread(tag, std::move(fn)); }
-    void runRenderJobs(bool closeQueue = false) { scheduler->runRenderJobs(tag, closeQueue); }
-    void waitForEmpty() const noexcept { scheduler->waitForEmpty(tag); }
+    void schedule(std::function<void()>&& fn) { 
+        printf("TaggedScheduler::schedule()\n"); 
+        scheduler->schedule(tag, std::move(fn)); 
+    }
+    void runOnRenderThread(std::function<void()>&& fn) { 
+        printf("TaggedScheduler::runOnRenderThread()\n");
+        scheduler->runOnRenderThread(tag, std::move(fn)); 
+    }
+    void runRenderJobs(bool closeQueue = false) { 
+        printf("TaggedScheduler::runRenderJobs()\n");
+        scheduler->runRenderJobs(tag, closeQueue); 
+    }
+    void waitForEmpty() const noexcept {
+        printf("TaggedScheduler::waitForEmpty()\n");
+        scheduler->waitForEmpty(tag); 
+    }
 
     /// type. Note: the task result is copied and passed by value.
     template <typename TaskFn, typename ReplyFn>

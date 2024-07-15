@@ -240,6 +240,7 @@ std::unique_ptr<RenderTree> RenderOrchestrator::createRenderTree(
     }
 
     imageManager->notifyIfMissingImageAdded();
+    printf("RenderOrchestrator::createRenderTree() is about to call imageManager->setLoaded()\n");
     imageManager->setLoaded(updateParameters->spriteLoaded);
 
     const LayerDifference layerDiff = diffLayers(layerImpls, updateParameters->layers);
@@ -420,8 +421,21 @@ std::unique_ptr<RenderTree> RenderOrchestrator::createRenderTree(
 #endif
     }
 
+    if (!updateParameters->styleLoaded) {
+        printf("RenderOchestrator::createRenderTree() style not yet loaded! a\n");
+    }
+
+    if (!isLoaded()) {
+        printf("RenderOchestrator::createRenderTree() isLoaded() returned false! a\n");
+    }
+
+    if (!isMapModeContinuous) {
+        printf("RenderOchestrator::createRenderTree() isMapModeContinuous is false! a\n");
+    }
+
     renderTreeParameters->loaded = updateParameters->styleLoaded && isLoaded();
     if (!isMapModeContinuous && !renderTreeParameters->loaded) {
+        printf("RenderOchestrator::createRenderTree() returning nullptr a\n");
         return nullptr;
     }
 
@@ -810,11 +824,13 @@ bool RenderOrchestrator::isLoaded() const {
 
     // do the simple boolean check before iterating over all the tiles in all the sources
     if (!imageManager->isLoaded()) {
+        printf("RenderOchestrator::createRenderTree() image manager not yet loaded! a\n");
         return false;
     }
 
     for (const auto& entry : renderSources) {
         if (!entry.second->isLoaded()) {
+            printf("RenderOchestrator::createRenderTree() renderSources not yet loaded! a\n");
             return false;
         }
     }

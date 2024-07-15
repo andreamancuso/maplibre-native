@@ -1,7 +1,10 @@
 #include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/thread_local.hpp>
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
-
+#endif
 namespace mbgl {
 
 std::function<void()> Scheduler::bindOnce(std::function<void()> fn) {
@@ -11,6 +14,10 @@ std::function<void()> Scheduler::bindOnce(std::function<void()> fn) {
         auto schedulerGuard = scheduler.lock();
         if (scheduler) scheduler->schedule(std::move(scheduled));
     };
+}
+
+mapbox::base::WeakPtr<mbgl::Scheduler> Scheduler::makeWeakPtr() { 
+    return weakFactory.makeWeakPtr(); 
 }
 
 static auto& current() {
@@ -30,10 +37,8 @@ Scheduler* Scheduler::GetCurrent() {
 std::shared_ptr<Scheduler> Scheduler::GetBackground() {
     static std::weak_ptr<Scheduler> weak;
     static std::mutex mtx;
-
     std::lock_guard<std::mutex> lock(mtx);
     std::shared_ptr<Scheduler> scheduler = weak.lock();
-
     if (!scheduler) {
         weak = scheduler = std::make_shared<ThreadPool>();
     }

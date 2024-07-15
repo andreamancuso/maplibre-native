@@ -37,34 +37,56 @@ FileSourceManager::~FileSourceManager() = default;
 std::shared_ptr<FileSource> FileSourceManager::getFileSource(FileSourceType type,
                                                              const ResourceOptions& resourceOptions,
                                                              const ClientOptions& clientOptions) noexcept {
+    // printf("FileSourceManager::getFileSource() a\n");
     std::lock_guard<std::recursive_mutex> lock(impl->mutex);
+    // printf("FileSourceManager::getFileSource() b\n");
 
     // Remove released file sources.
     for (auto it = impl->fileSources.begin(); it != impl->fileSources.end();) {
+        // printf("FileSourceManager::getFileSource() c\n");
         it = it->fileSource.expired() ? impl->fileSources.erase(it) : ++it;
     }
 
+    // printf("FileSourceManager::getFileSource() d\n");
     const auto context = reinterpret_cast<uint64_t>(resourceOptions.platformContext());
+    // printf("FileSourceManager::getFileSource() e\n");
     std::string baseURL = resourceOptions.tileServerOptions().baseURL();
+    // printf("FileSourceManager::getFileSource() f, baseURL: %s\n", baseURL.c_str());
     std::string id = baseURL + '|' + resourceOptions.apiKey() + '|' + resourceOptions.cachePath() + '|' +
                      util::toString(context);
+    // printf("FileSourceManager::getFileSource() g, id: %s\n", id.c_str());
 
     std::shared_ptr<FileSource> fileSource;
+    // printf("FileSourceManager::getFileSource() h\n");
     auto fileSourceIt = std::find_if(impl->fileSources.begin(), impl->fileSources.end(), [type, &id](const auto& info) {
+        // printf("FileSourceManager::getFileSource() i\n");
         return info.type == type && info.id == id;
     });
+    // printf("FileSourceManager::getFileSource() l\n");
     if (fileSourceIt != impl->fileSources.end()) {
+        // printf("FileSourceManager::getFileSource() m\n");
         fileSource = fileSourceIt->fileSource.lock();
+        // printf("FileSourceManager::getFileSource() n\n");
     }
 
+    // printf("FileSourceManager::getFileSource() o\n");
+
     if (!fileSource) {
+        // printf("FileSourceManager::getFileSource() p\n");
         auto it = impl->fileSourceFactories.find(type);
+        // printf("FileSourceManager::getFileSource() q\n");
         if (it != impl->fileSourceFactories.end()) {
+            // printf("FileSourceManager::getFileSource() r\n");
             assert(it->second);
+            // printf("FileSourceManager::getFileSource() s\n");
             fileSource = it->second(resourceOptions, clientOptions);
+            // printf("FileSourceManager::getFileSource() t\n");
             impl->fileSources.emplace_back(type, std::move(id), fileSource);
+            // printf("FileSourceManager::getFileSource() u\n");
         }
     }
+
+    // printf("FileSourceManager::getFileSource() v\n");
 
     return fileSource;
 }

@@ -1,6 +1,7 @@
 #include <mbgl/util/work_request.hpp>
 #include <mbgl/util/work_task.hpp>
 
+#include <stdio.h>
 #include <cassert>
 #include <utility>
 
@@ -12,6 +13,7 @@ WorkRequest::WorkRequest(Task task_)
 }
 
 WorkRequest::~WorkRequest() {
+    printf("WorkRequest::~WorkRequest\n");
     task->cancel();
 }
 

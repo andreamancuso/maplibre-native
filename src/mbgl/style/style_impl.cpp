@@ -35,6 +35,7 @@ Style::Impl::Impl(std::shared_ptr<FileSource> fileSource_, float pixelRatio, con
       spriteLoader(std::make_unique<SpriteLoader>(pixelRatio, threadPool_)),
       light(std::make_unique<Light>()),
       observer(&nullObserver) {
+
     spriteLoader->setObserver(this);
     light->setObserver(this);
 }
@@ -158,6 +159,8 @@ TransitionOptions Style::Impl::getTransitionOptions() const {
 }
 
 void Style::Impl::addSource(std::unique_ptr<Source> source) {
+    printf("Style::Impl::addSource()\n");
+
     if (sources.get(source->getID())) {
         std::string msg = "Source " + source->getID() + " already exists";
         throw std::runtime_error(msg.c_str());

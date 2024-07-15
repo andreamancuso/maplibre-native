@@ -15,9 +15,10 @@ public:
 
     void send();
 
+    std::function<void()> m_task;
+
 private:
-    class Impl;
-    std::unique_ptr<Impl> impl;
+    pthread_t m_thread;
 };
 
 } // namespace util

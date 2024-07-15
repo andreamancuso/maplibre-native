@@ -37,13 +37,22 @@ public:
 
     template <typename Fn, class... Args>
     auto ask(Fn fn, Args&&... args) const {
+        // printf("ActorRef::ask() a\n");
+
         // Result type is deduced from the function's return type
         using ResultType = std::invoke_result_t<decltype(fn), Object, Args...>;
 
+        // printf("ActorRef::ask() b\n");
+
         std::promise<ResultType> promise;
+
+        // printf("ActorRef::ask() c\n");
         auto future = promise.get_future();
 
+        // printf("ActorRef::ask() d\n");
+
         if (auto mailbox = weakMailbox.lock()) {
+            // printf("ActorRef::ask() e\n");
             mailbox->push(actor::makeMessage(std::move(promise), *object, fn, std::forward<Args>(args)...));
         } else {
             promise.set_exception(std::make_exception_ptr(std::runtime_error("Actor has gone away")));

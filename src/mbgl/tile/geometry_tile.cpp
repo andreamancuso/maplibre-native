@@ -21,7 +21,12 @@
 #include <mbgl/tile/tile_observer.hpp>
 #include <mbgl/util/instrumentation.hpp>
 #include <mbgl/util/logging.hpp>
+
+#ifdef __EMSCRIPTEN__
+#include <mbgl/emscripten/util/thread_pool.hpp>
+#else
 #include <mbgl/util/thread_pool.hpp>
+#endif
 
 #include <mbgl/gfx/upload_pass.hpp>
 #include <utility>

@@ -43,33 +43,50 @@ class Thread {
 public:
     template <typename TupleArgs>
     Thread(std::function<void()> prioritySetter_, const std::string& name, TupleArgs&& args) {
+        // printf("Thread::Thread a()\n");
         std::promise<void> running_;
+        // printf("Thread::Thread b()\n");
         running = running_.get_future();
+        // printf("Thread::Thread c()\n");
         thread = std::thread([this,
                               name,
                               capturedArgs = std::forward<TupleArgs>(args),
                               runningPromise = std::move(running_),
                               prioritySetter = std::move(prioritySetter_)]() mutable {
+            // printf("Thread::Thread d()\n");
             platform::setCurrentThreadName(name);
+            // printf("Thread::Thread e()\n");
             if (prioritySetter) prioritySetter();
+            // printf("Thread::Thread f()\n");
             platform::attachThread();
+            // printf("Thread::Thread g()\n");
 
             // narrowing the scope to release the Object before we detach the thread
             {
+                // printf("Thread::Thread h()\n");
                 util::RunLoop loop_(util::RunLoop::Type::New);
+                // printf("Thread::Thread i()\n");
                 loop = &loop_;
+                // printf("Thread::Thread l()\n");
                 EstablishedActor<Object> establishedActor(loop_, object, std::move(capturedArgs));
-
+                // printf("Thread::Thread m()\n");
                 runningPromise.set_value();
+                // printf("Thread::Thread n()\n");
 
                 loop->run();
+                // printf("Thread::Thread o()\n");
 
                 (void)establishedActor;
+                // printf("Thread::Thread p()\n");
 
                 loop = nullptr;
             }
 
+            // printf("Thread::Thread q()\n");
+
             platform::detachThread();
+
+            // printf("Thread::Thread r()\n");
         });
     }
 
@@ -97,6 +114,7 @@ public:
         stoppable.get_future().get();
 
         loop->stop();
+        printf("Thread::~Thread() about to call thread.join()\n");
         thread.join();
     }
 
@@ -104,7 +122,11 @@ public:
     /// can be used to send messages to `Object`. It is safe
     /// to the non-owning reference to outlive this object
     /// and be used after the `Thread<>` gets destroyed.
-    ActorRef<std::decay_t<Object>> actor() { return object.self(); }
+    ActorRef<std::decay_t<Object>> actor() { 
+        printf("Thread::actor() h\n");
+
+        return object.self(); 
+    }
 
     /// Pauses the `Object` thread. It will prevent the object to wake
     /// up from events such as timers and file descriptor I/O. Messages

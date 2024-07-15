@@ -22,93 +22,17 @@ void ThreadedSchedulerBase::terminate() {
 
 std::thread ThreadedSchedulerBase::makeSchedulerThread(size_t index) {
     return std::thread([this, index] {
-        auto& settings = platform::Settings::getInstance();
-        auto value = settings.get(platform::EXPERIMENTAL_THREAD_PRIORITY_WORKER);
-        if (auto* priority = value.getDouble()) {
-            platform::setCurrentThreadPriority(*priority);
-        }
-
-        platform::setCurrentThreadName("Worker " + util::toString(index + 1));
-        platform::attachThread();
-
-        owningThreadPool.set(this);
-
-        while (true) {
-            std::unique_lock<std::mutex> conditionLock(workerMutex);
-            if (!terminated && taskCount == 0) {
-                cvAvailable.wait(conditionLock);
-            }
-
-            if (terminated) {
-                platform::detachThread();
-                break;
-            }
-
-            // Let other threads run
-            conditionLock.unlock();
-
-            std::vector<std::shared_ptr<Queue>> pending;
-            {
-                // 1. Gather buckets for us to visit this iteration
-                std::lock_guard<std::mutex> lock(taggedQueueLock);
-                for (const auto& [tag, queue] : taggedQueue) {
-                    pending.push_back(queue);
-                }
-            }
-
-            // 2. Visit a task from each
-            for (auto& q : pending) {
-                std::function<void()> tasklet;
-                {
-                    std::lock_guard<std::mutex> lock(q->lock);
-                    if (q->queue.size()) {
-                        q->runningCount++;
-                        tasklet = std::move(q->queue.front());
-                        q->queue.pop();
-                    }
-                    if (!tasklet) continue;
-                }
-
-                assert(taskCount > 0);
-                taskCount--;
-
-                try {
-                    tasklet();
-                    tasklet = {}; // destroy the function and release its captures before unblocking `waitForEmpty`
-
-                    if (!--q->runningCount) {
-                        std::lock_guard<std::mutex> lock(q->lock);
-                        if (q->queue.empty()) {
-                            q->cv.notify_all();
-                        }
-                    }
-                } catch (...) {
-                    std::lock_guard<std::mutex> lock(q->lock);
-                    if (handler) {
-                        handler(std::current_exception());
-                    }
-
-                    tasklet = {};
-
-                    if (!--q->runningCount && q->queue.empty()) {
-                        q->cv.notify_all();
-                    }
-
-                    if (handler) {
-                        continue;
-                    }
-                    throw;
-                }
-            }
-        }
+        
     });
 }
 
 void ThreadedSchedulerBase::schedule(std::function<void()>&& fn) {
+    printf("ddddd\n"); 
     schedule(uniqueID, std::move(fn));
 }
 
 void ThreadedSchedulerBase::schedule(const util::SimpleIdentity tag, std::function<void()>&& fn) {
+    printf("[base] ThreadedSchedulerBase::schedule()\n");
     assert(fn);
     if (!fn) return;
 

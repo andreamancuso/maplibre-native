@@ -39,7 +39,9 @@ void GLFWRendererFrontend::render() {
 
     if (!updateParameters) return;
 
+    printf("GLFWRendererFrontend::render() a\n");
     mbgl::gfx::BackendScope guard{glfwView.getRendererBackend(), mbgl::gfx::BackendScope::ScopeType::Implicit};
+    printf("GLFWRendererFrontend::render() b\n");
 
     // onStyleImageMissing might be called during a render. The user implemented
     // method could trigger a call to MLNRenderFrontend#update which overwrites
